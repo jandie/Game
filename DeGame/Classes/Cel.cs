@@ -43,6 +43,11 @@ namespace DeGame
         {
             powerUpInCell = powerUp;
         }
+        public void ReSetPowerUp()
+        {
+            if (powerUpInCell != null) { powerUpInCell.TypePowerUp = Enums.TypePowerUp.None; }
+            
+        }
         public PowerUp GetPowerUp()
         {
             return powerUpInCell;

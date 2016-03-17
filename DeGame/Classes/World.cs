@@ -78,7 +78,7 @@ namespace DeGame
                 maps = new List<Map>();
                 for (int i = 0; i < 10; i++)
                 {
-                    Map map = new Map(100,100,100);
+                    Map map = new Map(100,30,30);
                     maps.Add(map);
                 }
             }
@@ -87,6 +87,7 @@ namespace DeGame
         {
             maps[currentMap].ResetPlayer();
             maps[currentMap].ResetBots();
+            maps[currentMap].ResetPowerUps();
         }
         public void PlaceObject(Enums.Object typeCel,int x,int y)
         {

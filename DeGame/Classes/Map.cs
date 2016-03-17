@@ -70,6 +70,14 @@ namespace DeGame
             bots = new List<Bot>();
             GenerateBots();
         }
+        public void ResetPowerUps()
+        {
+            foreach (Cel cel in cells)
+            {
+                cel.ReSetPowerUp();
+            }
+            GeneratePowerUps();
+        }
 
         public void PlaceObject(Enums.Object typeCel, int x, int y)
         {

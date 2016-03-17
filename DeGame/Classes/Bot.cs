@@ -25,6 +25,7 @@ namespace DeGame.Classes
             PrevLocationY = 0;
             strength = 100;
         }
+
         public void Move(int x, int y)
         {
             PrevLocationX = LocationX;
@@ -33,10 +34,12 @@ namespace DeGame.Classes
             LocationY = y;
 
         }
+
         public void Kill()
         {
             killed = true;
         }
+
         public bool IsKilled()
         {
             return killed;

@@ -10,8 +10,8 @@ namespace DeGame
     public class Player : Entity
     {
         private Direction direction;
-        
         private int hitpoints;
+
         public Enums.TypePowerUp powerUp { get; set; }
 
         public Player()
@@ -40,10 +40,12 @@ namespace DeGame
         public Enums.PlayerStatus RemoveHitpoints(int amount)
         {
             hitpoints -= amount;
+
             if (hitpoints < 1)
             {
                 return PlayerStatus.Dead;
             }
+
             return PlayerStatus.Alive;
         }
     }

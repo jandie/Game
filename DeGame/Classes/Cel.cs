@@ -13,6 +13,8 @@ namespace DeGame
         private Classes.PowerUp powerUpInCell;
         private int locationX;
         private int locationY;
+
+        public Bot bot{get; set;}
         
         public Cel (Enums.Object typeCel ,int x, int y)
         {
@@ -21,14 +23,17 @@ namespace DeGame
             locationX = x;
             locationY = y;
         }
+
         public void SetObject(Enums.Object typeCel)
         {
             this.typeCel = typeCel;
         }
+
         public int GetX()
         {
             return locationX;
         }
+
         public int GetY()
         {
             return locationY;
@@ -43,11 +48,12 @@ namespace DeGame
         {
             powerUpInCell = powerUp;
         }
+
         public void ReSetPowerUp()
         {
             if (powerUpInCell != null) { powerUpInCell.TypePowerUp = Enums.TypePowerUp.None; }
-            
         }
+
         public PowerUp GetPowerUp()
         {
             return powerUpInCell;

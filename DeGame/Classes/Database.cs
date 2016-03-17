@@ -75,9 +75,8 @@ namespace DeGame
 
             try
             {
-                Query = "CREATE TABLE `Figuur` (`nr` INTEGER, `typefiguur` INTEGER, `punt1x` INTEGER, `punt1y` INTEGER, `punt2x` INTEGER, `punt2y` INTEGER, `r` INTEGER, `g`	INTEGER, `b`	INTEGER, `lijndikte` INTEGER, PRIMARY KEY(nr))";
+                //Query = "CREATE TABLE `Figuur` (`nr` INTEGER, `typefiguur` INTEGER, `punt1x` INTEGER, `punt1y` INTEGER, `punt2x` INTEGER, `punt2y` INTEGER, `r` INTEGER, `g`	INTEGER, `b`	INTEGER, `lijndikte` INTEGER, PRIMARY KEY(nr))";
                 Command.ExecuteNonQuery();
-                
             }
             catch (SQLiteException e)
             {

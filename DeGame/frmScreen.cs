@@ -35,14 +35,17 @@ namespace DeGame
             gr = CreateGraphics();
             directionKeys = new bool[4];
             world = new World();
+
             world.LoadMap();
             DrawCellsPlayerAndBots();
             DrawPlayer();
             //MakeFullScreen();
+
             tmrMoveBots.Interval = 800;
             tmrMoveBots.Start();
             tmrMovePlayer.Interval = 1;
             tmrMovePlayer.Start();
+
             this.Size = new Size(windowX, windowY);
             this.Text = "The Game - Level: " + world.CurrentLevel;
         }
@@ -124,9 +127,9 @@ namespace DeGame
 
         private void frmScreen_KeyPress(object sender, KeyPressEventArgs e)
         {
-            Player player;
-            player = world.GetPlayer();
+            Player player = world.GetPlayer();
             bool otherThanDirection = false;
+
             switch (Convert.ToString(e.KeyChar).ToLower())
             {
                 case "w":
@@ -173,9 +176,9 @@ namespace DeGame
         private void CheckPlayerAndBots()
         {
             world.ClearCellsToUpdate();
-
             Enums.PlayerStatus playerAlive;
             playerAlive = world.CheckPlayerPosition();
+
             switch (playerAlive)
             {
                 case Enums.PlayerStatus.Dead:
@@ -207,8 +210,7 @@ namespace DeGame
 
         private void frmScreen_SizeChanged(object sender, EventArgs e)
         {
-            frmScreen screen;
-            screen = sender as frmScreen;
+            frmScreen screen = sender as frmScreen;
             windowX = screen.Width;
             windowY = screen.Height;
         }
@@ -216,6 +218,7 @@ namespace DeGame
         private void tmrMovePlayer_Tick(object sender, EventArgs e)
         {
             bool refresh = false;
+
             for (int i = 0; i < directionKeys.Count(); i++)
             {
                 if (directionKeys[i])
@@ -223,19 +226,21 @@ namespace DeGame
                     refresh = true;
                 }
             }
+
             if (refresh)
             {
                 world.MovePlayer(directionKeys);
+
                 for (int i = 0; i < directionKeys.Count(); i++)
                 {
                     directionKeys[i] = false;
                     
                 }
+
                 DrawCellsPlayerAndBots();
                 DrawPlayer();
                 CheckPlayerAndBots();
             }
-            
         }
     }
 }

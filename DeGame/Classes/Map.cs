@@ -56,6 +56,12 @@ namespace DeGame
             }
         }
 
+        /// <summary>
+        /// Draws all the entities and objects on the main screen.
+        /// </summary>
+        /// <param name="gr">Graphics object of the main screen.</param>
+        /// <param name="windowX">Width of the main screen.</param>
+        /// <param name="windowY">Heigth of the main screen.</param>
         public void DrawCellsPlayerAndBots(Graphics gr, int windowX, int windowY)
         {
             Image image;
@@ -120,6 +126,9 @@ namespace DeGame
             }
         }
 
+        /// <summary>
+        /// Resets the player
+        /// </summary>
         public void ResetPlayer()
         {
             player = new Player();
@@ -133,12 +142,18 @@ namespace DeGame
             }
         }
 
+        /// <summary>
+        /// Resets all bots.
+        /// </summary>
         public void ResetBots()
         {
-            bots = new List<Bot>();
+            bots.Clear();
             GenerateBots();
         }
 
+        /// <summary>
+        /// Resets all powerUps
+        /// </summary>
         public void ResetPowerUps()
         {
             foreach (Cel cel in cells)
@@ -148,6 +163,12 @@ namespace DeGame
             GeneratePowerUps();
         }
 
+        /// <summary>
+        /// Replaces the object of a cel.
+        /// </summary>
+        /// <param name="typeCel">The new object of the cell</param>
+        /// <param name="x">The x coördinate of the cell</param>
+        /// <param name="y">The y coördinate of the cell</param>
         public void PlaceObject(Enums.Object typeCel, int x, int y)
         {
             int celX = x + OverheadX;
@@ -167,6 +188,10 @@ namespace DeGame
             GetSingleCell(celX, celY).SetObject(typeCel);
         }
 
+        /// <summary>
+        /// Moves all the bots to the player if the player is in a cel next to the bot.
+        /// If player is not in a cel next to the bot, the bot moves randomly.
+        /// </summary>
         public void MoveBots()
         {
             int direction;
@@ -241,6 +266,10 @@ namespace DeGame
             }
         }
 
+        /// <summary>
+        /// Checks if a bot is in the same cell as a player.
+        /// </summary>
+        /// <returns>Returns the status of a player</returns>
         public Enums.PlayerStatus CheckBotOnPlayer()
         {
             foreach (Bot bot in bots)
@@ -268,6 +297,12 @@ namespace DeGame
             return PlayerStatus.Alive;
         }
 
+        /// <summary>
+        /// Searches for a cell with coördinates.
+        /// </summary>
+        /// <param name="x">X coördinate.</param>
+        /// <param name="y">Y coördinate.</param>
+        /// <returns>Cel found or null</returns>
         public Cel GetSingleCell(int x, int y)
         {
             foreach (Cel cel in cells)
@@ -281,6 +316,10 @@ namespace DeGame
             return null;
         }
 
+        /// <summary>
+        /// Moves player
+        /// </summary>
+        /// <param name="directionKeys">Direction the player want to go.</param>
         public void MovePlayer(bool[] directionKeys)
         {
             bool playerMove = true;
@@ -324,6 +363,12 @@ namespace DeGame
             
         }
 
+        /// <summary>
+        /// Checks if player is in the same position as a powerup.
+        /// </summary>
+        /// <param name="x">X position of player.</param>
+        /// <param name="y">Y posiiton of player.</param>
+        /// <returns>What type of powerup the player stays on.</returns>
         private Enums.TypePowerUp CheckPlayerOnPowerUp(int x, int y)
         {
             Cel cel = GetSingleCell(x, y);
@@ -340,11 +385,20 @@ namespace DeGame
             return Enums.TypePowerUp.None;
         }
 
+        /// <summary>
+        /// Gets player.
+        /// </summary>
+        /// <returns>The player.</returns>
         public Player GetPlayer()
         {
             return player;
         }
 
+        /// <summary>
+        /// Calculates if the screen needs to be adjusted in order for the player to remain visible on screen.
+        /// </summary>
+        /// <param name="windowX">Width of window</param>
+        /// <param name="windowY">Heigth of window</param>
         public void CalculateOverhead(int windowX,int windowY)
         {
             if (player.LocationX > 500)
@@ -371,6 +425,12 @@ namespace DeGame
             else { OverheadY = 0; }
         }
 
+        /// <summary>
+        /// Gets the cells that need to be shown on the screen.
+        /// </summary>
+        /// <param name="windowX">Width of window</param>
+        /// <param name="windowY">Heigth of window</param>
+        /// <returns></returns>
         public List<Cel> GetCells(int windowX, int windowY)
         {
             List<Cel> windowCells = new List<Cel>();
@@ -388,6 +448,12 @@ namespace DeGame
             return windowCells;
         }
 
+        /// <summary>
+        /// Gets bots inside window
+        /// </summary>
+        /// <param name="windowX"></param>
+        /// <param name="windowY"></param>
+        /// <returns>List with bots in window.</returns>
         public List<Bot> GetBots(int windowX, int windowY)
         {
             List<Bot> windowsBots = new List<Bot>();
@@ -407,6 +473,12 @@ namespace DeGame
             return windowsBots;
         }
 
+        /// <summary>
+        /// Checks where the bots are.
+        /// </summary>
+        /// <param name="x">X coördinate</param>
+        /// <param name="y">Y coördinate</param>
+        /// <returns>If a bot was found on this position</returns>
         public bool DetectBot(int x, int y)
         {
             foreach (Bot bot in bots)
@@ -419,6 +491,13 @@ namespace DeGame
 
             return false;
         }
+
+        /// <summary>
+        /// Checks where the player is.
+        /// </summary>
+        /// <param name="x">X coördinate</param>
+        /// <param name="y">Y coördinate</param>
+        /// <returns>If the player was found on this position</returns>
         public bool DetectPlayer(int x, int y)
         {
             
@@ -429,6 +508,10 @@ namespace DeGame
             
             return false;
         }
+
+        /// <summary>
+        /// Generates a new random map.
+        /// </summary>
         public void MakeDefaultMap()
         {
             for (int i = 0; i < mapSize * mapSize; i++)
@@ -458,6 +541,9 @@ namespace DeGame
             GeneratePowerUps();
         }
 
+        /// <summary>
+        /// Generates bots randomly.
+        /// </summary>
         private void GenerateBots()
         {
             Cel cel;
@@ -481,6 +567,9 @@ namespace DeGame
             }
         }
 
+        /// <summary>
+        /// Generates powerups randomly
+        /// </summary>
         private void GeneratePowerUps()
         {
             int amountOfPowerUps = random.Next(6);

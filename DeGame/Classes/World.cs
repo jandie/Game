@@ -30,15 +30,26 @@ namespace DeGame
             this.windowY = windowY;
         }
 
+        /// <summary>
+        /// Updates the coördinates of the window in the world class.
+        /// </summary>
+        /// <param name="windowX">Window width</param>
+        /// <param name="windowY">Window height</param>
         public void UpdateWindow(int windowX, int windowY)
         {
             this.windowX = windowX;
             this.windowY = windowY;
         }
 
+        /// <summary>
+        /// Checks a key update to determine and do what needs to happen.
+        /// </summary>
+        /// <param name="keyChar">Char of the pressed key</param>
+        /// <param name="mouseX">X position of the mouse</param>
+        /// <param name="mouseY">Y position of the mouse</param>
         public void KeyUpdate(char keyChar, int mouseX, int mouseY)
         {
-            Player player = GetPlayer();
+            Player player = maps[currentMap].GetPlayer();
             bool otherThanDirection = false;
 
             switch (Convert.ToString(keyChar).ToLower())
@@ -83,9 +94,13 @@ namespace DeGame
             }
         }
 
+        /// <summary>
+        /// Checks if a bot is in the same cell as a player.
+        /// If the player dies, the map gets reset.
+        /// </summary>
         private void CheckPlayerAndBots()
         {
-            Enums.PlayerStatus playerAlive = CheckPlayerPosition();
+            Enums.PlayerStatus playerAlive = maps[currentMap].CheckBotOnPlayer();
 
             switch (playerAlive)
             {
@@ -99,17 +114,18 @@ namespace DeGame
             }
         }
 
+        /// <summary>
+        /// Draws all the entities and objects of the current map on the main screen.
+        /// </summary>
         public void Draw()
         {
             maps[currentMap].DrawCellsPlayerAndBots(gr, windowX, windowY);
             CheckPlayerAndBots();
         }
 
-        public Enums.PlayerStatus CheckPlayerPosition()
-        {
-            return maps[currentMap].CheckBotOnPlayer();
-        }
-
+        /// <summary>
+        /// Increases currentLevel by 1. Maximum currentLevel is 9.
+        /// </summary>
         public void NextLevel()
         {
             currentMap++;
@@ -120,41 +136,10 @@ namespace DeGame
             }
         }
 
-        public int GetOverheadX()
-        {
-            return maps[currentMap].OverheadX;
-        }
-
-        public int GetOverheadY()
-        {
-            return maps[currentMap].OverheadY;
-        }
-
-        public void MoveBots()
-        {
-            maps[currentMap].MoveBots();
-        }
-
-        public List<Cel> GetDrawableCells(int x, int y)
-        {
-            return maps[currentMap].GetCells(x,y);
-        }
-
-        public List<Bot> GetDrawableBots(int x, int y)
-        {
-            return maps[currentMap].GetBots(x, y);
-        }
-        
-        public Cel GetSingleCell(int x, int y)
-        {
-            return maps[currentMap].GetSingleCell(x, y);
-        }
-
-        public Player GetPlayer()
-        {
-            return maps[currentMap].GetPlayer();
-        }
-
+        /// <summary>
+        /// Attempts to load all maps from the database.
+        /// If there are no maps in the database it generates new maps.
+        /// </summary>
         public void LoadMap()
         {
             maps = Database.LoadAllMaps();
@@ -174,6 +159,9 @@ namespace DeGame
             Draw();
         }
 
+        /// <summary>
+        /// Resets the players, bots and powerups in the current map.
+        /// </summary>
         public void Reset()
         {
             maps[currentMap].ResetPlayer();
@@ -181,16 +169,28 @@ namespace DeGame
             maps[currentMap].ResetPowerUps();
         }
 
+        /// <summary>
+        /// Replaces the object of a cel in the current man.
+        /// </summary>
+        /// <param name="typeCel">The new object of the cell</param>
+        /// <param name="x">The x coördinate of the cell</param>
+        /// <param name="y">The y coördinate of the cell</param>
         public void PlaceObject(Enums.Object typeCel,int x,int y)
         {
             maps[currentMap].PlaceObject(typeCel, x, y);
         }
 
+        /// <summary>
+        /// Moves all the bots in the current map.
+        /// </summary>
         public void MoveAllBots()
         {
             maps[currentMap].MoveBots();
         }
 
+        /// <summary>
+        /// Checks if player movement is neccessary and then moves the player.
+        /// </summary>
         public void MovePlayer()
         {
             bool refresh = false;

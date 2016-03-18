@@ -10,7 +10,6 @@ namespace DeGame
     public class Map
     {
         private List<Cel> cells;
-        private List<Cel> cellsToUpdate;
         private List<Bot> bots;
         /// <summary>
         /// size of one cell in pixels
@@ -26,13 +25,11 @@ namespace DeGame
 
         public int OverheadX { get; private set; }
         public int OverheadY { get; private set; }
-        public List<Cel> CellsToUpdate { get { return cellsToUpdate; } }
         public List<Bot> Bots { get { return bots; } }
 
         public Map(int cellSize, int mapSize, int amountOfBots)
         {
             cells = new List<Cel>();
-            cellsToUpdate = new List<Cel>();
             bots = new List<Bot>();
             player = new Player();
             this.cellSize = cellSize;
@@ -89,12 +86,10 @@ namespace DeGame
                     if (cel.GetTypeCel() == typeCel)
                     {
                         GetSingleCell(cel.GetX(), cel.GetY()).SetObject(Enums.Object.Grass);
-                        cellsToUpdate.Add(GetSingleCell(cel.GetX(), cel.GetY()));
                     }
                 }
             }
             GetSingleCell(celX, celY).SetObject(typeCel);
-            cellsToUpdate.Add(GetSingleCell(celX, celY));
         }
 
         public void MoveBots()
@@ -164,7 +159,6 @@ namespace DeGame
                 if (botMove)
                 {
                     bots[a].Move(botX, botY);
-                    cellsToUpdate.Add(GetSingleCell(bots[a].PrevLocationX, bots[a].PrevLocationY));
                 }
             }
         }
@@ -268,40 +262,41 @@ namespace DeGame
             return Enums.TypePowerUp.None;
         }
 
-        public void ClearCellsToUpdate()
-        {
-            cellsToUpdate.Clear();
-        }
-
         public Player GetPlayer()
         {
             return player;
+        }
+        public void CalculateOverhead(int windowX,int windowY)
+        {
+            if (player.LocationX > 500)
+            {
+                OverheadX = player.LocationX - 500;
+
+                if (OverheadX + windowX > cellSize * mapSize)
+                {
+                    OverheadX = (cellSize * mapSize) - windowX;
+                }
+            }
+            else {
+                OverheadX = 0;
+            }
+
+            if (player.LocationY > 500)
+            {
+                OverheadY = player.LocationY - 500;
+                if (OverheadY + windowY > cellSize * mapSize)
+                {
+                    OverheadY = (cellSize * mapSize) - windowY;
+                }
+            }
+            else { OverheadY = 0; }
         }
 
         public List<Cel> GetCells(int windowX, int windowY)
         {
             List<Cel> windowCells = new List<Cel>();
 
-            if (player.LocationX > 500)
-            {
-                OverheadX = player.LocationX - 500;
-                //maxoverhead
-                if (OverheadX + windowX  > cellSize * mapSize)
-                {
-                    OverheadX = (cellSize * mapSize) - windowX ;
-                }
-            }
-            else { OverheadX = 0; }
-
-            if (player.LocationY > 500)
-            {
-                OverheadY = player.LocationY - 500;
-                if (OverheadY + windowY  > cellSize * mapSize)
-                {
-                    OverheadY = (cellSize * mapSize) - windowY ;
-                }
-            }
-            else { OverheadY = 0; }
+            CalculateOverhead(windowX, windowY);
 
             foreach (Cel cel in cells)
             {
@@ -313,6 +308,26 @@ namespace DeGame
 
             return windowCells;
         }
+
+        public List<Bot> GetBots(int windowX, int windowY)
+        {
+            List<Bot> windowsBots = new List<Bot>();
+
+            CalculateOverhead(windowX, windowY);
+
+            foreach (Bot bot in bots)
+            {
+                if (bot.LocationX >= OverheadX && bot.LocationX <= windowX + cellSize + OverheadX && 
+                    bot.LocationY >= OverheadY && bot.LocationY <= windowY + cellSize + OverheadY && 
+                    bot.IsKilled() == false)
+                {
+                    windowsBots.Add(bot);
+                }
+            }
+
+            return windowsBots;
+        }
+
         public bool DetectBot(int x, int y)
         {
             foreach (Bot bot in bots)

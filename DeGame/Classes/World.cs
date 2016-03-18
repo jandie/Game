@@ -45,22 +45,6 @@ namespace DeGame
             return maps[currentMap].OverheadY;
         }
 
-        public List<Bot> GetBots()
-        {
-            List<Bot> botsAlive = new List<Bot>();
-            List<Bot> bots = maps[currentMap].Bots;
-
-            foreach (Bot bot in bots)
-            {
-                if (bot.IsKilled() == false)
-                {
-                    botsAlive.Add(bot);
-                }
-            }
-
-            return botsAlive;
-        }
-
         public void MoveBots()
         {
             maps[currentMap].MoveBots();
@@ -69,6 +53,11 @@ namespace DeGame
         public List<Cel> GetDrawableCells(int x, int y)
         {
             return maps[currentMap].GetCells(x,y);
+        }
+
+        public List<Bot> GetDrawableBots(int x, int y)
+        {
+            return maps[currentMap].GetBots(x, y);
         }
 
         public Cel GetSingleCell(int x, int y)
@@ -118,16 +107,6 @@ namespace DeGame
         public void MovePlayer(bool[] directionKeys)
         {
             maps[currentMap].MovePlayer(directionKeys);
-        }
-
-        public List<Cel> GetUpdatedCells()
-        {
-            return maps[currentMap].CellsToUpdate;
-        }
-
-        public void ClearCellsToUpdate()
-        {
-            maps[currentMap].ClearCellsToUpdate();
         }
     }
 }

@@ -63,8 +63,8 @@ namespace DeGame
             Point plaats;
 
             List<Cel> cells = world.GetDrawableCells(windowX , windowY);
+            List<Bot> bots = world.GetDrawableBots(windowX, windowY);
             Player player = world.GetPlayer();
-            List<Bot> bots = world.GetBots();
             
             foreach (Cel cel in cells)
             {
@@ -93,6 +93,18 @@ namespace DeGame
                     DrawPlayer();
                 }
 
+                foreach (Bot bot in bots)
+                {
+                    if (bot.LocationX == cel.GetX() && bot.LocationY == cel.GetY())
+                    {
+                        image = DeGame.Properties.Resources.bot;
+                        plaats = new Point(bot.LocationX - world.GetOverheadX(), bot.LocationY - world.GetOverheadY());
+
+                        gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
+                    }
+                    
+                }
+
                 if (cel.GetPowerUp() != null && cel.GetPowerUp().PickedUp == false)
                 {
                     switch (cel.GetPowerUp().TypePowerUp)
@@ -101,16 +113,6 @@ namespace DeGame
                             image = DeGame.Properties.Resources.MarioStar;
                             gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
                             break;
-                    }
-                }
-                
-                foreach (Bot bot in bots)
-                {
-                    if (cel.GetX() == bot.LocationX && cel.GetY() == bot.LocationY)
-                    {
-                        image = DeGame.Properties.Resources.bot;
-                        plaats = new Point(bot.LocationX - world.GetOverheadX(), bot.LocationY - world.GetOverheadY());
-                        gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
                     }
                 }
             }
@@ -175,9 +177,7 @@ namespace DeGame
 
         private void CheckPlayerAndBots()
         {
-            world.ClearCellsToUpdate();
-            Enums.PlayerStatus playerAlive;
-            playerAlive = world.CheckPlayerPosition();
+            Enums.PlayerStatus playerAlive = world.CheckPlayerPosition();
 
             switch (playerAlive)
             {

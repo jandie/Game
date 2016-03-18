@@ -14,7 +14,7 @@ namespace DeGame
         private int locationX;
         private int locationY;
 
-        public Bot bot{get; set;}
+        public Bot Bot{get; set;}
         
         public Cel (Enums.Object typeCel ,int x, int y)
         {

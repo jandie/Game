@@ -95,6 +95,7 @@ namespace DeGame
                     gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
                 }
 
+
                 foreach (Bot bot in botsToDraw)
                 {
                     if (bot.LocationX == cel.GetX() && bot.LocationY == cel.GetY())
@@ -104,7 +105,6 @@ namespace DeGame
 
                         gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
                     }
-
                 }
 
                 if (cel.GetPowerUp() != null && cel.GetPowerUp().PickedUp == false)
@@ -223,17 +223,20 @@ namespace DeGame
                             break;
                     }
                 }
+
+                Cel cel = GetSingleCell(botX, botY);
+
                 if (botX > cellSize * (mapSize - 1) || botX < 0 || botY > cellSize * (mapSize - 1) || botY < 0)
                 {
                     botMove = false;
                 }
-                else if (GetSingleCell(botX, botY).GetTypeCel() != Enums.Object.Grass || DetectBot(botX, botY))
+                else if (cel.GetTypeCel() != Enums.Object.Grass || DetectBot(botX, botY))
                 {
                     botMove = false;
                 }
                 if (botMove)
                 {
-                    bots[a].Move(botX, botY);
+                    bots[a].Move(cel);
                 }
             }
         }
@@ -341,6 +344,7 @@ namespace DeGame
         {
             return player;
         }
+
         public void CalculateOverhead(int windowX,int windowY)
         {
             if (player.LocationX > 500)
@@ -456,6 +460,7 @@ namespace DeGame
 
         private void GenerateBots()
         {
+            Cel cel;
             int botX;
             int botY;
 
@@ -468,10 +473,11 @@ namespace DeGame
 
                     botX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botX) / Convert.ToDecimal(cellSize))) * cellSize;
                     botY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botY) / Convert.ToDecimal(cellSize))) * cellSize;
-                } while (GetSingleCell(botX, botY).GetTypeCel() != Enums.Object.Grass || DetectBot(botX, botY));
+                    cel = GetSingleCell(botX, botY);
+                } while (cel.GetTypeCel() != Enums.Object.Grass || DetectBot(botX, botY));
 
                 bots.Add(new Bot());
-                bots[a].Move(botX, botY);
+                bots[a].Move(cel);
             }
         }
 

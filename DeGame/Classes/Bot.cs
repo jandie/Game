@@ -12,12 +12,13 @@ namespace DeGame.Classes
     {
         private int strength;
         private bool killed;
+        private Cel celCurrentlyIn;
 
         public int Strength { get { return strength; } }
+        public Cel CelCurrentlyIn { get { return celCurrentlyIn; } }
 
         public Bot()
         {
-            //killed = true;
             killed = false;
             LocationX = 0;
             LocationY = 0;
@@ -26,13 +27,11 @@ namespace DeGame.Classes
             strength = 100;
         }
 
-        public void Move(int x, int y)
+        public void Move(Cel cel)
         {
-            PrevLocationX = LocationX;
-            PrevLocationY = LocationY;
-            LocationX = x;
-            LocationY = y;
-
+            LocationX = cel.GetX();
+            LocationY = cel.GetY();
+            celCurrentlyIn = cel;
         }
 
         public void Kill()

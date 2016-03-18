@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,13 @@ namespace DeGame
         public World()
         {
             maps = new List<Map>();
+
             currentMap = 0;
+        }
+
+        public void Draw(Graphics gr, int windowX, int windowY)
+        {
+            maps[currentMap].DrawCellsPlayerAndBots(gr, windowX, windowY);
         }
 
         public Enums.PlayerStatus CheckPlayerPosition()

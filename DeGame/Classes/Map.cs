@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using DeGame.Enums;
 using DeGame.Classes;
+using System.Drawing;
 
 namespace DeGame
 {
     public class Map
     {
+        private Dictionary<string, Image> images;
+
         private List<Cel> cells;
         private List<Bot> bots;
         /// <summary>
@@ -20,6 +23,7 @@ namespace DeGame
         /// </summary>
         private int mapSize; //amount of
         private int amountOfBots;
+
         private Player player;
         private static readonly Random random = new Random();
 
@@ -32,15 +36,86 @@ namespace DeGame
             cells = new List<Cel>();
             bots = new List<Bot>();
             player = new Player();
+
+            images = new Dictionary<string, Image>();
+            images.Add("Grass", Properties.Resources.grass);
+            images.Add("Wall", Properties.Resources.wall);
+
             this.cellSize = cellSize;
             this.mapSize = mapSize;
             this.amountOfBots = amountOfBots;
+
             MakeDefaultMap();
+
             foreach (Cel cel in cells)
             {
                 if (cel.GetTypeCel() == Enums.Object.StartPoint)
                 {
                     player.Move(cel.GetX(), cel.GetY() + 1 - 1);
+                }
+            }
+        }
+
+        public void DrawCellsPlayerAndBots(Graphics gr, int windowX, int windowY)
+        {
+            Image image;
+            Point plaats;
+
+            List<Cel> cellsToDraw = GetCells(windowX, windowY);
+            List<Bot> botsToDraw = GetBots(windowX, windowY);
+
+
+            foreach (Cel cel in cellsToDraw)
+            {
+                switch (cel.GetTypeCel())
+                {
+                    case Enums.Object.Wall:
+                        image = images["Wall"];
+                        break;
+                    case Enums.Object.Destination:
+                        image = DeGame.Properties.Resources.destination;
+                        break;
+                    case Enums.Object.StartPoint:
+                        image = DeGame.Properties.Resources.startpoint;
+                        break;
+                    default:
+                    case Enums.Object.Grass:
+                        image = images["Grass"];
+                        break;
+                }
+
+                plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
+                gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
+
+                if (cel.GetX() == player.LocationX && cel.GetY() == player.LocationY)
+                {
+                    image = DeGame.Properties.Resources.player;
+                    plaats = new Point(player.LocationX - OverheadX, player.LocationY - OverheadY);
+
+                    gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
+                }
+
+                foreach (Bot bot in botsToDraw)
+                {
+                    if (bot.LocationX == cel.GetX() && bot.LocationY == cel.GetY())
+                    {
+                        image = DeGame.Properties.Resources.bot;
+                        plaats = new Point(bot.LocationX - OverheadX, bot.LocationY - OverheadY);
+
+                        gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
+                    }
+
+                }
+
+                if (cel.GetPowerUp() != null && cel.GetPowerUp().PickedUp == false)
+                {
+                    switch (cel.GetPowerUp().TypePowerUp)
+                    {
+                        case Enums.TypePowerUp.MarioStar:
+                            image = DeGame.Properties.Resources.MarioStar;
+                            gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
+                            break;
+                    }
                 }
             }
         }
@@ -360,7 +435,7 @@ namespace DeGame
                 switch (i)
                 {
                     default:
-                        if (random.Next(0,11) == 5)
+                        if (random.Next(0, 7) == 5)
                         {
                             cells.Add(new Cel(Enums.Object.Wall, x * cellSize, y * cellSize));
                         }
@@ -378,6 +453,7 @@ namespace DeGame
             GenerateBots();
             GeneratePowerUps();
         }
+
         private void GenerateBots()
         {
             int botX;
@@ -388,8 +464,9 @@ namespace DeGame
                 do
                 {
                     botX = random.Next(cellSize * mapSize);
-                    botX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botX) / Convert.ToDecimal(cellSize))) * cellSize;
                     botY = random.Next(cellSize * mapSize);
+
+                    botX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botX) / Convert.ToDecimal(cellSize))) * cellSize;
                     botY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botY) / Convert.ToDecimal(cellSize))) * cellSize;
                 } while (GetSingleCell(botX, botY).GetTypeCel() != Enums.Object.Grass || DetectBot(botX, botY));
 
@@ -397,6 +474,7 @@ namespace DeGame
                 bots[a].Move(botX, botY);
             }
         }
+
         private void GeneratePowerUps()
         {
             int amountOfPowerUps = random.Next(6);

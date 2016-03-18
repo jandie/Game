@@ -14,7 +14,7 @@ namespace DeGame
     public partial class frmScreen : Form
     {
 
-        private Dictionary<string, Image> images;
+        
 
         private World world;
         private int mouseX;
@@ -28,18 +28,14 @@ namespace DeGame
         {
             InitializeComponent();
 
-            images = new Dictionary<string, Image>();
-            images.Add("Grass", Properties.Resources.grass);
-            images.Add("Wall", Properties.Resources.wall);
+            
 
             gr = CreateGraphics();
             directionKeys = new bool[4];
             world = new World();
 
             world.LoadMap();
-            DrawCellsPlayerAndBots();
-            DrawPlayer();
-            //MakeFullScreen();
+            world.Draw(gr, windowX, windowY);
 
             tmrMoveBots.Interval = 800;
             tmrMoveBots.Start();
@@ -52,79 +48,8 @@ namespace DeGame
 
         private void frmScreen_Paint(object sender, PaintEventArgs e)
         {
-            DrawCellsPlayerAndBots();
-            DrawPlayer();
+            world.Draw(gr, windowX, windowY);
             CheckPlayerAndBots();
-        }
-
-        private void DrawCellsPlayerAndBots()
-        {
-            Image image;
-            Point plaats;
-
-            List<Cel> cells = world.GetDrawableCells(windowX , windowY);
-            List<Bot> bots = world.GetDrawableBots(windowX, windowY);
-            Player player = world.GetPlayer();
-            
-            foreach (Cel cel in cells)
-            {
-                switch (cel.GetTypeCel())
-                {
-                    case Enums.Object.Wall:
-                        image = images["Wall"];
-                        break;
-                    case Enums.Object.Destination:
-                        image = DeGame.Properties.Resources.destination;
-                        break;
-                    case Enums.Object.StartPoint:
-                        image = DeGame.Properties.Resources.startpoint;
-                        break;
-                    default:
-                    case Enums.Object.Grass:
-                        image = images["Grass"];
-                        break;
-                }
-
-                plaats = new Point(cel.GetX() - world.GetOverheadX(), cel.GetY() - world.GetOverheadY());
-                gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
-
-                if (cel.GetX() == player.LocationX && cel.GetY() == player.LocationY)
-                {
-                    DrawPlayer();
-                }
-
-                foreach (Bot bot in bots)
-                {
-                    if (bot.LocationX == cel.GetX() && bot.LocationY == cel.GetY())
-                    {
-                        image = DeGame.Properties.Resources.bot;
-                        plaats = new Point(bot.LocationX - world.GetOverheadX(), bot.LocationY - world.GetOverheadY());
-
-                        gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
-                    }
-                    
-                }
-
-                if (cel.GetPowerUp() != null && cel.GetPowerUp().PickedUp == false)
-                {
-                    switch (cel.GetPowerUp().TypePowerUp)
-                    {
-                        case Enums.TypePowerUp.MarioStar:
-                            image = DeGame.Properties.Resources.MarioStar;
-                            gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
-                            break;
-                    }
-                }
-            }
-        }
-
-        private void DrawPlayer()
-        {
-            Image image = DeGame.Properties.Resources.player;
-            Player player = world.GetPlayer();
-            Point plaats = new Point(player.LocationX - world.GetOverheadX(), player.LocationY - world.GetOverheadY());
-            
-            gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
         }
 
         private void frmScreen_KeyPress(object sender, KeyPressEventArgs e)
@@ -169,8 +94,7 @@ namespace DeGame
             }
 
             if (otherThanDirection){
-                DrawCellsPlayerAndBots();
-                DrawPlayer();
+                world.Draw(gr, windowX, windowY);
                 CheckPlayerAndBots();
             }
         }
@@ -199,7 +123,7 @@ namespace DeGame
         {
             world.MoveAllBots();
             CheckPlayerAndBots();
-            DrawCellsPlayerAndBots();
+            world.Draw(gr, windowX, windowY);
         }
 
         private void frmScreen_MouseMove(object sender, MouseEventArgs e)
@@ -211,6 +135,7 @@ namespace DeGame
         private void frmScreen_SizeChanged(object sender, EventArgs e)
         {
             frmScreen screen = sender as frmScreen;
+
             windowX = screen.Width;
             windowY = screen.Height;
         }
@@ -236,9 +161,7 @@ namespace DeGame
                     directionKeys[i] = false;
                     
                 }
-
-                DrawCellsPlayerAndBots();
-                DrawPlayer();
+                world.Draw(gr, windowX, windowY);
                 CheckPlayerAndBots();
             }
         }

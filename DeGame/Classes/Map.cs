@@ -91,14 +91,14 @@ namespace DeGame
                 }
 
                 plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
-                gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
+                gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
 
                 if (cel.GetX() == player.LocationX && cel.GetY() == player.LocationY)
                 {
                     image = DeGame.Properties.Resources.player;
                     plaats = new Point(player.LocationX - OverheadX, player.LocationY - OverheadY);
 
-                    gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
+                    gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
                 }
 
 
@@ -109,7 +109,7 @@ namespace DeGame
                         image = DeGame.Properties.Resources.bot;
                         plaats = new Point(bot.LocationX - OverheadX, bot.LocationY - OverheadY);
 
-                        gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
+                        gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
                     }
                 }
 
@@ -119,7 +119,7 @@ namespace DeGame
                     {
                         case Enums.TypePowerUp.MarioStar:
                             image = DeGame.Properties.Resources.MarioStar;
-                            gr.DrawImage(image, plaats.X, plaats.Y, 100, 100);
+                            gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
                             break;
                     }
                 }
@@ -399,7 +399,7 @@ namespace DeGame
         /// </summary>
         /// <param name="windowX">Width of window</param>
         /// <param name="windowY">Heigth of window</param>
-        public void CalculateOverhead(int windowX,int windowY)
+        public void CalculateOverhead(int windowX, int windowY)
         {
             if (player.LocationX > 500)
             {
@@ -439,7 +439,8 @@ namespace DeGame
 
             foreach (Cel cel in cells)
             {
-                if(cel.GetX() >= OverheadX && cel.GetX() <= windowX + cellSize + OverheadX && cel.GetY() >= OverheadY && cel.GetY() <= windowY + cellSize + OverheadY)
+                if(cel.GetX() >= OverheadX && cel.GetX() <= windowX + cellSize + OverheadX && 
+                    cel.GetY() >= OverheadY && cel.GetY() <= windowY + cellSize + OverheadY)
                 {
                     windowCells.Add(cel);
                 }

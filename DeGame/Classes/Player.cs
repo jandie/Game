@@ -9,10 +9,11 @@ namespace DeGame
 {
     public class Player : Entity
     {
-        private Direction direction;
+        
         private int hitpoints;
 
         public Enums.TypePowerUp powerUp { get; set; }
+        public Direction Direction { get; set; }
 
         public Player()
         {

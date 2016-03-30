@@ -95,15 +95,31 @@ namespace DeGame
                 plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
                 gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
 
+                //Draw player
                 if (cel.GetX() == player.LocationX && cel.GetY() == player.LocationY)
                 {
-                    image = DeGame.Properties.Resources.player;
+                    switch (player.Direction)
+                    {
+                        case Direction.Right:
+                            image = DeGame.Properties.Resources.player_right;
+                            break;
+                        case Direction.Left:
+                            image = DeGame.Properties.Resources.player_left;
+                            break;
+                        case Direction.Up:
+                            image = DeGame.Properties.Resources.player_up;
+                            break;
+                        case Direction.Down:
+                            image = DeGame.Properties.Resources.player_down;
+                            break;
+                    }
+                    
                     plaats = new Point(player.LocationX - OverheadX, player.LocationY - OverheadY);
 
                     gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
                 }
 
-
+                //Draw bots
                 foreach (Bot bot in botsToDraw)
                 {
                     if (bot.LocationX == cel.GetX() && bot.LocationY == cel.GetY())
@@ -328,13 +344,13 @@ namespace DeGame
             int newX = player.LocationX;
             int newY = player.LocationY;
 
-            if (directionKeys[0]) { newY -= cellSize; }
+            if (directionKeys[0]) { newY -= cellSize; player.Direction = Direction.Up; }
 
-            if (directionKeys[1]) { newX -= cellSize; }
+            if (directionKeys[1]) { newX -= cellSize; player.Direction = Direction.Left; }
 
-            if (directionKeys[2]) { newY += cellSize; }
+            if (directionKeys[2]) { newY += cellSize; player.Direction = Direction.Down; }
 
-            if (directionKeys[3]) { newX += cellSize; }
+            if (directionKeys[3]) { newX += cellSize; player.Direction = Direction.Right; }
 
             foreach (Cel cel in cells)
             {

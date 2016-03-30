@@ -6,6 +6,8 @@ using DeGame.Enums;
 using DeGame.Classes;
 using System.Drawing;
 
+using System.Runtime.Serialization;
+
 namespace DeGame
 {
     public class Map

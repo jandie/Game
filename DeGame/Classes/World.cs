@@ -2,22 +2,26 @@
 using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using DeGame.Classes;
 
 namespace DeGame
 {
+   
     public class World
     {
         private bool[] directionKeys;
         private List<Map> maps;
         private int currentMap;
+        
         private int score;
         private int windowX;
         private int windowY;
         private Graphics gr;
 
         public int CurrentLevel { get { return currentMap; }}
+        public int CurrentScore { get { return score; } }
 
         public World(Graphics gr, int windowX, int windowY)
         {
@@ -30,6 +34,10 @@ namespace DeGame
             this.windowY = windowY;
         }
 
+        /// <summary>
+        /// Saves the current score.
+        /// </summary>
+       
         /// <summary>
         /// Updates the coördinates of the window in the world class.
         /// </summary>
@@ -106,8 +114,10 @@ namespace DeGame
             {
                 case Enums.PlayerStatus.Dead:
                     Reset();
+                    score -= 300;
                     break;
                 case Enums.PlayerStatus.Win:
+                    score += 1000;
                     NextLevel();
                     Reset();
                     break;

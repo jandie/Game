@@ -35,7 +35,7 @@ namespace DeGame
             tmrMovePlayer.Start();
 
             this.Size = new Size(windowX, windowY);
-            this.Text = "The Game - Level: " + world.CurrentLevel;
+            this.Text = "The Game - Level: " + world.CurrentLevel + " - Score: " + world.CurrentScore;
         }
 
         private void frmScreen_Paint(object sender, PaintEventArgs e)
@@ -46,7 +46,7 @@ namespace DeGame
         private void frmScreen_KeyPress(object sender, KeyPressEventArgs e)
         {
             world.KeyUpdate(e.KeyChar, mouseX, mouseY);
-            this.Text = "The Game - Level: " + world.CurrentLevel;
+            this.Text = "The Game - Level: " + world.CurrentLevel + " - Score: " + world.CurrentScore;
         }
 
         private void tmrMoveBots_Tick(object sender, EventArgs e)

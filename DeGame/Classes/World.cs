@@ -5,25 +5,27 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using DeGame.Classes;
+using System.IO;
 
 namespace DeGame
 {
-   
+    [DataContract]
     public class World
     {
+        World world;
         private bool[] directionKeys;
         private List<Map> maps;
         private int currentMap;
-        
+        [DataMember]
         private int score;
         private int windowX;
         private int windowY;
         private Graphics gr;
 
         public int CurrentLevel { get { return currentMap; }}
-        public int CurrentScore { get { return score; } }
+        public int CurrentScore { get { return score; } set{ score = value; } }
 
-        public World(Graphics gr, int windowX, int windowY)
+        public World(Graphics gr, World world, int windowX, int windowY)
         {
             maps = new List<Map>();
             directionKeys = new bool[4];
@@ -32,12 +34,9 @@ namespace DeGame
             this.gr = gr;
             this.windowX = windowX;
             this.windowY = windowY;
+            this.world = world;
         }
 
-        /// <summary>
-        /// Saves the current score.
-        /// </summary>
-       
         /// <summary>
         /// Updates the coördinates of the window in the world class.
         /// </summary>
@@ -142,7 +141,7 @@ namespace DeGame
 
             if (currentMap > 9)
             {
-                currentMap = 9;
+                currentMap = 0;
             }
         }
 

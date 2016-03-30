@@ -51,6 +51,7 @@
             this.DoubleBuffered = true;
             this.Name = "frmScreen";
             this.Text = "The Game";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmScreen_FormClosing);
             this.SizeChanged += new System.EventHandler(this.frmScreen_SizeChanged);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.frmScreen_Paint);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.frmScreen_KeyPress);

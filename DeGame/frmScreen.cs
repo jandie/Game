@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.Serialization;
+using System.IO;
 
 namespace DeGame
 {
@@ -25,7 +27,8 @@ namespace DeGame
             InitializeComponent();
             
             gr = CreateGraphics();
-            world = new World(gr, windowX, windowY);
+            world = new World(gr, world, windowX, windowY);
+            LoadScore();
 
             world.LoadMap();
             
@@ -71,6 +74,51 @@ namespace DeGame
         private void tmrMovePlayer_Tick(object sender, EventArgs e)
         {
             world.MovePlayer();
+        }
+
+        /// <summary>
+        /// Saves the current score.
+        /// </summary>
+        void SaveScore()
+        {
+            DataContractSerializer dcs = new DataContractSerializer(typeof(World));
+
+            using (FileStream f = new FileStream("file.xml",
+                   FileMode.Create, FileAccess.Write))
+            {
+                dcs.WriteObject(f, world);            // Wegschrijven
+
+                f.Close();
+            }
+        }
+
+        /// <summary>
+        /// Loads last score
+        /// </summary>
+        void LoadScore()
+        {
+            DataContractSerializer dcs = new DataContractSerializer(typeof(World));
+
+            try
+            {
+                using (FileStream f = new FileStream("file.xml",
+                                  FileMode.Open, FileAccess.Read))
+                {
+                    World tempWorld = dcs.ReadObject(f) as World; // Uitlezen
+
+                    world.CurrentScore = tempWorld.CurrentScore;
+                    
+                    f.Close();
+                }
+            }
+            catch { }
+            
+            
+        }
+
+        private void frmScreen_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveScore();
         }
     }
 }

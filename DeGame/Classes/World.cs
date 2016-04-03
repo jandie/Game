@@ -48,18 +48,37 @@ namespace DeGame
             this.windowY = windowY;
         }
 
+        public void KeyDown(string key)
+        {
+            switch (key.ToLower())
+            {
+                case "w":
+                    directionKeys[0] = false;
+                    break;
+                case "a":
+                    directionKeys[1] = false;
+                    break;
+                case "s":
+                    directionKeys[2] = false;
+                    break;
+                case "d":
+                    directionKeys[3] = false;
+                    break;
+            }
+        }
+
         /// <summary>
         /// Checks a key update to determine and do what needs to happen.
         /// </summary>
         /// <param name="keyChar">Char of the pressed key</param>
         /// <param name="mouseX">X position of the mouse</param>
         /// <param name="mouseY">Y position of the mouse</param>
-        public void KeyUpdate(char keyChar, int mouseX, int mouseY)
+        public void KeyUpdate(string key, int mouseX, int mouseY)
         {
             Player player = maps[currentMap].GetPlayer();
             bool otherThanDirection = false;
 
-            switch (Convert.ToString(keyChar).ToLower())
+            switch (key.ToLower())
             {
                 case "w":
                     directionKeys[0] = true;
@@ -202,29 +221,10 @@ namespace DeGame
         /// </summary>
         public void MovePlayer()
         {
-            bool refresh = false;
+            maps[currentMap].MovePlayer(directionKeys);
 
-            for (int i = 0; i < directionKeys.Count(); i++)
-            {
-                if (directionKeys[i])
-                {
-                    refresh = true;
-                }
-            }
-
-            if (refresh)
-            {
-                maps[currentMap].MovePlayer(directionKeys);
-
-                for (int i = 0; i < directionKeys.Count(); i++)
-                {
-                    directionKeys[i] = false;
-
-                }
-                Draw();
-                CheckPlayerAndBots();
-            }
-            
+            Draw();
+            CheckPlayerAndBots();
         }
     }
 }

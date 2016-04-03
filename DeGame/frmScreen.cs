@@ -34,7 +34,7 @@ namespace DeGame
             
             tmrMoveBots.Interval = 800;
             tmrMoveBots.Start();
-            tmrMovePlayer.Interval = 1;
+            tmrMovePlayer.Interval = 50;
             tmrMovePlayer.Start();
 
             this.Size = new Size(windowX, windowY);
@@ -53,8 +53,8 @@ namespace DeGame
 
         private void frmScreen_KeyPress(object sender, KeyPressEventArgs e)
         {
-            world.KeyUpdate(e.KeyChar, mouseX, mouseY);
-            RefreshStats();
+            //world.KeyUpdate(e.KeyChar, mouseX, mouseY);
+            //RefreshStats();
         }
 
         private void tmrMoveBots_Tick(object sender, EventArgs e)
@@ -121,9 +121,26 @@ namespace DeGame
             
         }
 
+        /// <summary>
+        /// saves score when form is being closed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void frmScreen_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveScore();
+        }
+
+        private void frmScreen_KeyDown(object sender, KeyEventArgs e)
+        {
+            world.KeyUpdate(e.KeyData.ToString(), mouseX, mouseY);
+            RefreshStats();
+        }
+
+        private void frmScreen_KeyUp(object sender, KeyEventArgs e)
+        {
+            world.KeyDown(e.KeyData.ToString());
+            RefreshStats();
         }
     }
 }

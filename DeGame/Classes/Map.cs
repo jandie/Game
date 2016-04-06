@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using DeGame.Enums;
 using DeGame.Classes;
 using System.Drawing;
-
 using System.Runtime.Serialization;
 
 namespace DeGame
@@ -13,27 +10,27 @@ namespace DeGame
     public class Map
     {
         private Dictionary<string, Image> images;
-
+        
         private List<Cel> cells;
         private List<Bot> bots;
         /// <summary>
         /// size of one cell in pixels
         /// </summary>
-        private int cellSize;
-        /// <summary>
-        /// amount of cells in height and width
-        /// </summary>
-        private int mapSize; //amount of
-        private int amountOfBots;
-
+        
         private Player player;
         private static readonly Random random = new Random();
 
         public int OverheadX { get; private set; }
         public int OverheadY { get; private set; }
         public List<Bot> Bots { get { return bots; } }
+        public int CellSize { get; set; }
+        /// <summary>
+        /// amount of cells in height and width
+        /// </summary>
+        public int MapSize { get; set; }
+        public int AmountOfBots { get; set; }
 
-        public Map(int cellSize, int mapSize, int amountOfBots)
+        public Map(int cellSize, int mapSize, int amountOfBots, bool loadedMap)
         {
             cells = new List<Cel>();
             bots = new List<Bot>();
@@ -43,12 +40,20 @@ namespace DeGame
             images.Add("Grass", Properties.Resources.grass);
             images.Add("Wall", Properties.Resources.wall);
 
-            this.cellSize = cellSize;
-            this.mapSize = mapSize;
-            this.amountOfBots = amountOfBots;
+            this.CellSize = cellSize;
+            this.MapSize = mapSize;
+            this.AmountOfBots = amountOfBots;
 
-            MakeDefaultMap();
+            if (loadedMap == false)
+            {
+                MakeDefaultMap();
+                MovePlayerToBegin();
+            }
+            
+        }
 
+        public void MovePlayerToBegin()
+        {
             foreach (Cel cel in cells)
             {
                 if (cel.GetTypeCel() == Enums.Object.StartPoint)
@@ -57,6 +62,7 @@ namespace DeGame
                 }
             }
         }
+
 
         /// <summary>
         /// Draws all the entities and objects on the main screen.
@@ -93,7 +99,7 @@ namespace DeGame
                 }
 
                 plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
-                gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
+                gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
 
                 //Draw player
                 if (cel.GetX() == player.LocationX && cel.GetY() == player.LocationY)
@@ -116,7 +122,7 @@ namespace DeGame
                     
                     plaats = new Point(player.LocationX - OverheadX, player.LocationY - OverheadY);
 
-                    gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
+                    gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
                 }
 
                 //Draw bots
@@ -127,7 +133,7 @@ namespace DeGame
                         image = DeGame.Properties.Resources.bot;
                         plaats = new Point(bot.LocationX - OverheadX, bot.LocationY - OverheadY);
 
-                        gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
+                        gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
                     }
                 }
 
@@ -137,11 +143,25 @@ namespace DeGame
                     {
                         case Enums.TypePowerUp.MarioStar:
                             image = DeGame.Properties.Resources.MarioStar;
-                            gr.DrawImage(image, plaats.X, plaats.Y, cellSize, cellSize);
+                            gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
                             break;
                     }
                 }
             }
+        }
+
+        public void SetCells(List<Cel> _cells)
+        {
+            cells = _cells;
+
+            GenerateBots();
+            GeneratePowerUps();
+            MovePlayerToBegin();
+        }
+
+        public List<Cel> GetAllCells()
+        {
+            return cells;
         }
 
         /// <summary>
@@ -191,8 +211,8 @@ namespace DeGame
         {
             int celX = x + OverheadX;
             int celY = y + OverheadY;
-            celX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(celX) / Convert.ToDecimal(cellSize))) * cellSize;
-            celY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(celY) / Convert.ToDecimal(cellSize))) * cellSize;
+            celX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(celX) / Convert.ToDecimal(CellSize))) * CellSize;
+            celY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(celY) / Convert.ToDecimal(CellSize))) * CellSize;
             if (typeCel == Enums.Object.StartPoint || typeCel == Enums.Object.Destination)
             {
                 foreach (Cel cel in cells)
@@ -216,28 +236,28 @@ namespace DeGame
             int botX = 0;
             int botY = 0;
             bool botMove = true;
-            for (int a = 0; a < amountOfBots - 1; a++)
+            for (int a = 0; a < AmountOfBots - 1; a++)
             {
                 botMove = true;
-                if (DetectPlayer(bots[a].LocationX, bots[a].LocationY - cellSize))
+                if (DetectPlayer(bots[a].LocationX, bots[a].LocationY - CellSize))
                 {
-                    botY = bots[a].LocationY - cellSize;
+                    botY = bots[a].LocationY - CellSize;
                     botX = bots[a].LocationX;
                 }
-                else if (DetectPlayer(bots[a].LocationX,bots[a].LocationY + cellSize))
+                else if (DetectPlayer(bots[a].LocationX,bots[a].LocationY + CellSize))
                 {
-                    botY = bots[a].LocationY + cellSize;
+                    botY = bots[a].LocationY + CellSize;
                     botX = bots[a].LocationX;
                 }
-                else if (DetectPlayer(bots[a].LocationX - cellSize, bots[a].LocationY))
+                else if (DetectPlayer(bots[a].LocationX - CellSize, bots[a].LocationY))
                 {
                     botY = bots[a].LocationY;
-                    botX = bots[a].LocationX - cellSize;
+                    botX = bots[a].LocationX - CellSize;
                 }
-                else if (DetectPlayer( bots[a].LocationX + cellSize,bots[a].LocationY))
+                else if (DetectPlayer( bots[a].LocationX + CellSize,bots[a].LocationY))
                 {
                     botY = bots[a].LocationY;
-                    botX = bots[a].LocationX + cellSize;
+                    botX = bots[a].LocationX + CellSize;
                 }
                 else
                 {
@@ -245,23 +265,23 @@ namespace DeGame
                     switch (direction)
                     {
                         case 1:
-                            botY = bots[a].LocationY - cellSize;
+                            botY = bots[a].LocationY - CellSize;
                             botX = bots[a].LocationX;
                             break;
                         case 2:
                             botY = bots[a].LocationY;
-                            botX = bots[a].LocationX - cellSize;
+                            botX = bots[a].LocationX - CellSize;
                             break;
                         case 3:
-                            botY = bots[a].LocationY + cellSize;
+                            botY = bots[a].LocationY + CellSize;
                             botX = bots[a].LocationX;
                             break;
                         case 4:
                             botY = bots[a].LocationY;
-                            botX = bots[a].LocationX + cellSize;
+                            botX = bots[a].LocationX + CellSize;
                             break;
                         default:
-                            botY = bots[a].LocationY - cellSize;
+                            botY = bots[a].LocationY - CellSize;
                             botX = bots[a].LocationX;
                             break;
                     }
@@ -269,7 +289,7 @@ namespace DeGame
 
                 Cel cel = GetSingleCell(botX, botY);
 
-                if (botX > cellSize * (mapSize - 1) || botX < 0 || botY > cellSize * (mapSize - 1) || botY < 0)
+                if (botX > CellSize * (MapSize - 1) || botX < 0 || botY > CellSize * (MapSize - 1) || botY < 0)
                 {
                     botMove = false;
                 }
@@ -344,13 +364,13 @@ namespace DeGame
             int newX = player.LocationX;
             int newY = player.LocationY;
 
-            if (directionKeys[0]) { newY -= cellSize; player.Direction = Direction.Up; }
+            if (directionKeys[0]) { newY -= CellSize; player.Direction = Direction.Up; }
 
-            if (directionKeys[1]) { newX -= cellSize; player.Direction = Direction.Left; }
+            if (directionKeys[1]) { newX -= CellSize; player.Direction = Direction.Left; }
 
-            if (directionKeys[2]) { newY += cellSize; player.Direction = Direction.Down; }
+            if (directionKeys[2]) { newY += CellSize; player.Direction = Direction.Down; }
 
-            if (directionKeys[3]) { newX += cellSize; player.Direction = Direction.Right; }
+            if (directionKeys[3]) { newX += CellSize; player.Direction = Direction.Right; }
 
             foreach (Cel cel in cells)
             {
@@ -364,7 +384,7 @@ namespace DeGame
                 }
             }
 
-            if (newX > cellSize * (mapSize - 1) || newX < 0 || newY > cellSize * (mapSize - 1) || newY < 0)
+            if (newX > CellSize * (MapSize - 1) || newX < 0 || newY > CellSize * (MapSize - 1) || newY < 0)
             {
                 playerMove = false;
             }
@@ -423,9 +443,9 @@ namespace DeGame
             {
                 OverheadX = player.LocationX - 500;
 
-                if (OverheadX + windowX > cellSize * mapSize)
+                if (OverheadX + windowX > CellSize * MapSize)
                 {
-                    OverheadX = (cellSize * mapSize) - windowX;
+                    OverheadX = (CellSize * MapSize) - windowX;
                 }
             }
             else {
@@ -435,9 +455,9 @@ namespace DeGame
             if (player.LocationY > 500)
             {
                 OverheadY = player.LocationY - 500;
-                if (OverheadY + windowY > cellSize * mapSize)
+                if (OverheadY + windowY > CellSize * MapSize)
                 {
-                    OverheadY = (cellSize * mapSize) - windowY;
+                    OverheadY = (CellSize * MapSize) - windowY;
                 }
             }
             else { OverheadY = 0; }
@@ -457,8 +477,8 @@ namespace DeGame
 
             foreach (Cel cel in cells)
             {
-                if(cel.GetX() >= OverheadX && cel.GetX() <= windowX + cellSize + OverheadX && 
-                    cel.GetY() >= OverheadY && cel.GetY() <= windowY + cellSize + OverheadY)
+                if(cel.GetX() >= OverheadX && cel.GetX() <= windowX + CellSize + OverheadX && 
+                    cel.GetY() >= OverheadY && cel.GetY() <= windowY + CellSize + OverheadY)
                 {
                     windowCells.Add(cel);
                 }
@@ -481,8 +501,8 @@ namespace DeGame
 
             foreach (Bot bot in bots)
             {
-                if (bot.LocationX >= OverheadX && bot.LocationX <= windowX + cellSize + OverheadX && 
-                    bot.LocationY >= OverheadY && bot.LocationY <= windowY + cellSize + OverheadY && 
+                if (bot.LocationX >= OverheadX && bot.LocationX <= windowX + CellSize + OverheadX && 
+                    bot.LocationY >= OverheadY && bot.LocationY <= windowY + CellSize + OverheadY && 
                     bot.IsKilled() == false)
                 {
                     windowsBots.Add(bot);
@@ -533,28 +553,28 @@ namespace DeGame
         /// </summary>
         public void MakeDefaultMap()
         {
-            for (int i = 0; i < mapSize * mapSize; i++)
+            for (int i = 0; i < MapSize * MapSize; i++)
             {
-                int y = Convert.ToInt32(Math.Floor(Convert.ToDecimal(i) / Convert.ToDecimal(mapSize)));
-                int x = (i) - (y * mapSize);
+                int y = Convert.ToInt32(Math.Floor(Convert.ToDecimal(i) / Convert.ToDecimal(MapSize)));
+                int x = (i) - (y * MapSize);
 
                 switch (i)
                 {
                     default:
                         if (random.Next(0, 7) == 5)
                         {
-                            cells.Add(new Cel(Enums.Object.Wall, x * cellSize, y * cellSize));
+                            cells.Add(new Cel(Enums.Object.Wall, x * CellSize, y * CellSize));
                         }
                         else
                         {
-                            cells.Add(new Cel(Enums.Object.Grass, x * cellSize, y * cellSize));
+                            cells.Add(new Cel(Enums.Object.Grass, x * CellSize, y * CellSize));
                         }
                         break;
                 }
             }
 
-            cells[random.Next(1, mapSize * mapSize)].SetObject(Enums.Object.Destination);
-            cells[random.Next(1, mapSize * mapSize)].SetObject(Enums.Object.StartPoint);
+            cells[random.Next(1, MapSize * MapSize)].SetObject(Enums.Object.Destination);
+            cells[random.Next(1, MapSize * MapSize)].SetObject(Enums.Object.StartPoint);
 
             GenerateBots();
             GeneratePowerUps();
@@ -569,15 +589,15 @@ namespace DeGame
             int botX;
             int botY;
 
-            for (int a = 0; a < amountOfBots - 1; a++)
+            for (int a = 0; a < AmountOfBots - 1; a++)
             {
                 do
                 {
-                    botX = random.Next(cellSize * mapSize);
-                    botY = random.Next(cellSize * mapSize);
+                    botX = random.Next(CellSize * MapSize);
+                    botY = random.Next(CellSize * MapSize);
 
-                    botX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botX) / Convert.ToDecimal(cellSize))) * cellSize;
-                    botY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botY) / Convert.ToDecimal(cellSize))) * cellSize;
+                    botX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botX) / Convert.ToDecimal(CellSize))) * CellSize;
+                    botY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botY) / Convert.ToDecimal(CellSize))) * CellSize;
                     cel = GetSingleCell(botX, botY);
                 } while (cel.GetTypeCel() != Enums.Object.Grass || DetectBot(botX, botY));
 
@@ -600,7 +620,7 @@ namespace DeGame
             {
                 do
                 {
-                    powerUpCellIndex = random.Next(mapSize * mapSize);
+                    powerUpCellIndex = random.Next(MapSize * MapSize);
                 }
                 while (cells[powerUpCellIndex].GetTypeCel() != Enums.Object.Grass || cells[powerUpCellIndex].GetPowerUp() != null);
 

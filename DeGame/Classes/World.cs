@@ -172,17 +172,19 @@ namespace DeGame
         {
             maps = Database.LoadAllMaps();
 
-            if (maps == null)
-            {
-                maps = new List<Map>();
+            //if (maps == null)
+            //{
+            //    maps = new List<Map>();
 
-                for (int i = 0; i < 10; i++)
-                {
-                    Map map = new Map(100,30,30);
+            //    for (int i = 0; i < 10; i++)
+            //    {
+            //        Map map = new Map(100,30,30, false);
 
-                    maps.Add(map);
-                }
-            }
+            //        maps.Add(map);
+            //    }
+
+            //    //Database.SaveAllMaps(maps);
+            //}
 
             Draw();
         }
@@ -203,7 +205,7 @@ namespace DeGame
         /// <param name="typeCel">The new object of the cell</param>
         /// <param name="x">The x coördinate of the cell</param>
         /// <param name="y">The y coördinate of the cell</param>
-        public void PlaceObject(Enums.Object typeCel,int x,int y)
+        public void PlaceObject(Enums.Object typeCel, int x, int y)
         {
             maps[currentMap].PlaceObject(typeCel, x, y);
         }

@@ -172,19 +172,19 @@ namespace DeGame
         {
             maps = Database.LoadAllMaps();
 
-            //if (maps == null)
-            //{
-            //    maps = new List<Map>();
+            if (maps == null)
+            {
+                maps = new List<Map>();
 
-            //    for (int i = 0; i < 10; i++)
-            //    {
-            //        Map map = new Map(100,30,30, false);
+                for (int i = 0; i < 10; i++)
+                {
+                    Map map = new Map(100, 30, 30, false);
 
-            //        maps.Add(map);
-            //    }
+                    maps.Add(map);
+                }
 
-            //    //Database.SaveAllMaps(maps);
-            //}
+                Database.SaveAllMaps(maps);
+            }
 
             Draw();
         }

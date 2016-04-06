@@ -21,6 +21,7 @@ namespace DeGame
         private int windowX;
         private int windowY;
         private Graphics gr;
+        Database Database;
 
         public int CurrentLevel { get { return currentMap; }}
         public int CurrentScore { get { return score; } set{ score = value; } }
@@ -29,6 +30,7 @@ namespace DeGame
         {
             maps = new List<Map>();
             directionKeys = new bool[4];
+            Database = new Database();
 
             currentMap = 0;
             this.gr = gr;

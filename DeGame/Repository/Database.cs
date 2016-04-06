@@ -11,12 +11,12 @@ using DeGame;
 
 namespace DeGame
 {
-    public static class Database
+    public class Database : Repository.IGameContext 
     {
-        private static readonly string databaseFilename = "DeGame.sqlite";
-        private static SQLiteConnection connection;
+        private readonly string databaseFilename = "DeGame.sqlite";
+        private SQLiteConnection connection;
 
-        public static string Query
+        public string Query
         {
             set
             {
@@ -25,14 +25,14 @@ namespace DeGame
             }
         }
 
-        public static SQLiteCommand Command { get; private set; }
+        public SQLiteCommand Command { get; private set; }
 
-        public static string DatabaseFilename
+        public string DatabaseFilename
         {
             get { return databaseFilename; }
         }
         
-        public static void OpenConnection()
+        public void OpenConnection()
         {
             if (connection.State != System.Data.ConnectionState.Open)
             {
@@ -41,7 +41,7 @@ namespace DeGame
         }
 
 
-        public static void CloseConnection()
+        public void CloseConnection()
         {
             if (connection.State != System.Data.ConnectionState.Closed)
             {
@@ -49,7 +49,7 @@ namespace DeGame
             }
         }
 
-        public static void PrepareConnection()
+        public void PrepareConnection()
         {
             bool createNew = !File.Exists(databaseFilename);
 
@@ -69,7 +69,7 @@ namespace DeGame
             }
         }
 
-        private static void CreateDummyData()
+        private void CreateDummyData()
         {
             OpenConnection();
 
@@ -88,15 +88,15 @@ namespace DeGame
             CloseConnection();
         }
 
-        public static List<Map> LoadAllMaps()
+        public List<Map> LoadAllMaps()
         {
             try
             {
                 PrepareConnection();
-                Database.Query = "SELECT * FROM Map";
-                Database.OpenConnection();
+                Query = "SELECT * FROM Map";
+                OpenConnection();
 
-                SQLiteDataReader reader = Database.Command.ExecuteReader();
+                SQLiteDataReader reader = Command.ExecuteReader();
 
                 List<Map> Maps = new List<Map>();
 
@@ -111,10 +111,10 @@ namespace DeGame
 
                 for (int i = 0; i < 10; i++)
                 {
-                    Database.Query = "SELECT * FROM Cell WHERE `Map_ID` = " + i.ToString();
-                    Database.OpenConnection();
+                    Query = "SELECT * FROM Cell WHERE `Map_ID` = " + i.ToString();
+                    OpenConnection();
 
-                    reader = Database.Command.ExecuteReader();
+                    reader = Command.ExecuteReader();
 
                     while (reader.Read())
                     {
@@ -135,7 +135,7 @@ namespace DeGame
                     Cells.Clear();
                 }
 
-                Database.CloseConnection();
+                CloseConnection();
 
                 if (Maps.Count == 0)
                 {
@@ -155,21 +155,21 @@ namespace DeGame
             }
         }
 
-        public static bool SaveAllMaps(List<Map> _maps)
+        public bool SaveAllMaps(List<Map> _maps)
         {
             int ID = 0;
             bool success = true;
 
             PrepareConnection();
 
-            Database.OpenConnection();
-            Database.Query = "DELETE FROM MAP";
-            Database.Command.ExecuteNonQuery();
-            Database.Query = "DELETE FROM CELL";
-            Database.Command.ExecuteNonQuery();
-            Database.CloseConnection();
+            OpenConnection();
+            Query = "DELETE FROM MAP";
+            Command.ExecuteNonQuery();
+            Query = "DELETE FROM CELL";
+            Command.ExecuteNonQuery();
+            CloseConnection();
 
-            Database.OpenConnection();
+            OpenConnection();
             foreach (Map map in _maps)
             {
                 Query = "INSERT INTO MAP (CellSize, MapSize, AmountOfBots) values (@CellSize, @MapSize, @AmountOfBots);";
@@ -179,7 +179,7 @@ namespace DeGame
 
                 try
                 {
-                    Database.Command.ExecuteNonQuery();
+                    Command.ExecuteNonQuery();
                 }
                 catch (SQLiteException e)
                 {
@@ -200,7 +200,7 @@ namespace DeGame
 
                     try
                     {
-                        Database.Command.ExecuteNonQuery();
+                        Command.ExecuteNonQuery();
                     }
                     catch (SQLiteException e)
                     {
@@ -213,7 +213,7 @@ namespace DeGame
                 ID++;
             }
 
-            Database.CloseConnection();
+            CloseConnection();
 
             return success;
         }

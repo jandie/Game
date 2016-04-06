@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="Classes\Bot.cs" />
     <Compile Include="Classes\Cel.cs" />
-    <Compile Include="Classes\Database.cs" />
+    <Compile Include="Repository\Database.cs" />
     <Compile Include="Classes\Entity.cs" />
     <Compile Include="Classes\PowerUp.cs" />
     <Compile Include="Enums\Enums.cs" />
@@ -67,6 +67,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\World.cs" />
+    <Compile Include="Repository\IGameContext.cs" />
     <EmbeddedResource Include="frmScreen.resx">
       <DependentUpon>frmScreen.cs</DependentUpon>
     </EmbeddedResource>

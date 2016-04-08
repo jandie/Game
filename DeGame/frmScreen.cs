@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Runtime.Serialization;
 using System.IO;
 using System.Reflection;
+using DeGame.Properties;
 
 namespace DeGame
 {
@@ -37,7 +38,7 @@ namespace DeGame
             
             tmrMoveBots.Interval = 800;
             tmrMoveBots.Start();
-            tmrMovePlayer.Interval = 50;
+            tmrMovePlayer.Interval = 1;
             tmrMovePlayer.Start();
 
             this.Size = new Size(windowX, windowY);
@@ -46,10 +47,15 @@ namespace DeGame
 
         void RefreshStats()
         {
-            this.Text = "The Game - Level: " + _world.CurrentLevel + " - Score: " + _world.CurrentScore;
+            this.Text = Resources.frmScreen_RefreshStats_The_Game___Level__ + _world.CurrentLevel + Resources.frmScreen_RefreshStats____Score__ + _world.CurrentScore;
         }
 
         private void frmScreen_Paint(object sender, PaintEventArgs e)
+        {
+            
+        }
+
+        private void pnlScreen_Paint(object sender, PaintEventArgs e)
         {
             _world.Draw();
         }
@@ -148,5 +154,7 @@ namespace DeGame
             _world.KeyDown(e.KeyData.ToString());
             RefreshStats();
         }
+
+        
     }
 }

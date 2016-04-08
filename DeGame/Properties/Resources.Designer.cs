@@ -81,6 +81,24 @@ namespace DeGame.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to  - Score: .
+        /// </summary>
+        internal static string frmScreen_RefreshStats____Score__ {
+            get {
+                return ResourceManager.GetString("frmScreen_RefreshStats____Score__", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Game - Level: .
+        /// </summary>
+        internal static string frmScreen_RefreshStats_The_Game___Level__ {
+            get {
+                return ResourceManager.GetString("frmScreen_RefreshStats_The_Game___Level__", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap grass {

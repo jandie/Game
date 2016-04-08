@@ -50,6 +50,7 @@
             this.pnlScreen.Name = "pnlScreen";
             this.pnlScreen.Size = new System.Drawing.Size(1400, 900);
             this.pnlScreen.TabIndex = 0;
+            this.pnlScreen.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlScreen_Paint);
             // 
             // frmScreen
             // 

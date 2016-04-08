@@ -20,6 +20,7 @@ namespace DeGame
         
         private Player _player;
         private static readonly Random _Random = new Random();
+        private int _framesDrawn;
 
         public int OverheadX { get; private set; }
         public int OverheadY { get; private set; }
@@ -46,6 +47,8 @@ namespace DeGame
             this.CellSize = cellSize;
             this.MapSize = mapSize;
             this.AmountOfBots = amountOfBots;
+            _framesDrawn = 0;
+            _framesDrawn = 0;
 
             if (loadedMap == false)
             {
@@ -77,6 +80,8 @@ namespace DeGame
         {
             List<Cel> cellsToDraw = GetCells(windowX, windowY);
             List<Bot> botsToDraw = GetBots(windowX, windowY);
+            Image image;
+            Point plaats;
 
             Bitmap screen = new Bitmap(windowX, windowY);
             Graphics screenGraphics = Graphics.FromImage(screen);
@@ -84,7 +89,7 @@ namespace DeGame
 
             foreach (Cel cel in cellsToDraw)
             {
-                Image image;
+                
                 switch (cel.GetTypeCel())
                 {
                     case Enums.Object.Wall:
@@ -102,7 +107,7 @@ namespace DeGame
                         break;
                 }
 
-                var plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
+                plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
                 screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
 
                 
@@ -132,16 +137,6 @@ namespace DeGame
                 }
 
                 //Draw _bots
-                foreach (Bot bot in botsToDraw)
-                {
-                    if (bot.LocationX == cel.GetX() && bot.LocationY == cel.GetY())
-                    {
-                        image = DeGame.Properties.Resources.bot;
-                        plaats = new Point(bot.LocationX - OverheadX, bot.LocationY - OverheadY);
-
-                        screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
-                    }
-                }
 
                 if (cel.GetPowerUp() != null && cel.GetPowerUp().PickedUp == false)
                 {
@@ -154,7 +149,22 @@ namespace DeGame
                     }
                 }
             }
+            foreach (Bot bot in botsToDraw)
+            {
+                image = DeGame.Properties.Resources.bot;
+                plaats = new Point(bot.LocationX - OverheadX, bot.LocationY - OverheadY);
+
+                screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
+            }
+
             gr.DrawImage(screen, 0, 0, windowX, windowY);
+
+            _framesDrawn++;
+            if (_framesDrawn > 10)
+            {
+                System.GC.Collect();
+                _framesDrawn = 0;
+            }
         }
 
         public void SetCells(List<Cel> cells)

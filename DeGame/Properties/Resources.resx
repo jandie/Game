@@ -148,4 +148,10 @@
   <data name="player_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Textures\player up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="frmScreen_RefreshStats_The_Game___Level__" xml:space="preserve">
+    <value>The Game - Level: </value>
+  </data>
+  <data name="frmScreen_RefreshStats____Score__" xml:space="preserve">
+    <value> - Score: </value>
+  </data>
 </root>

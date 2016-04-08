@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Bot.cs" />
+    <Compile Include="Classes\Bullet.cs" />
     <Compile Include="Classes\Cel.cs" />
     <Compile Include="Repository\Database.cs" />
     <Compile Include="Classes\Entity.cs" />

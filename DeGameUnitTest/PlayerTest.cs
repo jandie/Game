@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DeGame.Classes;
 
 namespace DeGameUnitTest
@@ -10,9 +9,9 @@ namespace DeGameUnitTest
         [TestMethod]
         public void TestPlayer()
         {
-            DeGame.Player player = new DeGame.Player();
+            Player player = new Player();
 
-            Assert.AreEqual(DeGame.Enums.TypePowerUp.None, player.powerUp, "PowerUp set incorrectly");
+            Assert.AreEqual(DeGame.Enums.TypePowerUp.None, player.PowerUp, "PowerUp set incorrectly");
             Assert.AreEqual(0, player.LocationX, "Location set incorrectly");
             Assert.AreEqual(0, player.LocationY, "Location set incorrectly");
         }

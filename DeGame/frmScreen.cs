@@ -1,12 +1,6 @@
 ﻿using DeGame.Classes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.Serialization;
 using System.IO;
@@ -62,7 +56,7 @@ namespace DeGame
 
         private void frmScreen_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //world.KeyUpdate(e.KeyChar, _mouseX, mouseY);
+            //world.KeyDown(e.KeyChar, _mouseX, mouseY);
             //RefreshStats();
         }
 
@@ -88,6 +82,7 @@ namespace DeGame
         private void tmrMovePlayer_Tick(object sender, EventArgs e)
         {
             _world.MovePlayer();
+            _world.MoveAllBullets();
         }
 
         /// <summary>
@@ -145,13 +140,13 @@ namespace DeGame
 
         private void frmScreen_KeyDown(object sender, KeyEventArgs e)
         {
-            _world.KeyUpdate(e.KeyData.ToString(), _mouseX, _mouseY);
+            _world.KeyDown(e.KeyData.ToString(), _mouseX, _mouseY);
             RefreshStats();
         }
 
         private void frmScreen_KeyUp(object sender, KeyEventArgs e)
         {
-            _world.KeyDown(e.KeyData.ToString());
+            _world.KeyUp(e.KeyData.ToString());
             RefreshStats();
         }
 

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using DeGame.Enums;
-using DeGame.Classes;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.Serialization;
+using DeGame.Enums;
+using Object = DeGame.Enums.Object;
 
-namespace DeGame
+namespace DeGame.Classes
 {
     public class Map
     {
@@ -14,6 +13,7 @@ namespace DeGame
         
         private List<Cel> _cells;
         private List<Bot> _bots;
+        private List<Bullet> _bullets; 
         /// <summary>
         /// size of one cell in pixels
         /// </summary>
@@ -37,6 +37,7 @@ namespace DeGame
             _cells = new List<Cel>();
             _bots = new List<Bot>();
             _player = new Player();
+            _bullets = new List<Bullet>();
 
             _images = new Dictionary<string, Image>
             {
@@ -76,20 +77,19 @@ namespace DeGame
         /// <param name="gr">Graphics object of the main screen.</param>
         /// <param name="windowX">Width of the main screen.</param>
         /// <param name="windowY">Heigth of the main screen.</param>
-        public void DrawCellsPlayerAndBots(Graphics gr, int windowX, int windowY)
+        public void DrawCellsAndEntities(Graphics gr, int windowX, int windowY)
         {
             List<Cel> cellsToDraw = GetCells(windowX, windowY);
             List<Bot> botsToDraw = GetBots(windowX, windowY);
             Image image;
             Point plaats;
+            Brush brush = new SolidBrush(Color.Aqua);
 
             Bitmap screen = new Bitmap(windowX, windowY);
             Graphics screenGraphics = Graphics.FromImage(screen);
 
-
             foreach (Cel cel in cellsToDraw)
             {
-                
                 switch (cel.GetTypeCel())
                 {
                     case Enums.Object.Wall:
@@ -110,8 +110,6 @@ namespace DeGame
                 plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
                 screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
 
-                
-                
                 //Draw _player
                 if (cel.GetX() == _player.LocationX && cel.GetY() == _player.LocationY)
                 {
@@ -130,7 +128,7 @@ namespace DeGame
                             image = DeGame.Properties.Resources.player_down;
                             break;
                     }
-                    
+
                     plaats = new Point(_player.LocationX - OverheadX, _player.LocationY - OverheadY);
 
                     screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
@@ -149,12 +147,20 @@ namespace DeGame
                     }
                 }
             }
+
             foreach (Bot bot in botsToDraw)
             {
                 image = DeGame.Properties.Resources.bot;
                 plaats = new Point(bot.LocationX - OverheadX, bot.LocationY - OverheadY);
 
                 screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
+            }
+
+            foreach (Bullet bullet in _bullets.Where(b => b.LocationX >= OverheadX && b.LocationY >= OverheadY && b.LocationX <= OverheadX + windowX && b.LocationY <= windowY + OverheadY && !b.Destroyed))
+            {
+                
+
+                screenGraphics.FillEllipse(brush, bullet.LocationX - OverheadX + (CellSize / 2), bullet.LocationY - OverheadY + (CellSize / 2), 10, 10 );
             }
 
             gr.DrawImage(screen, 0, 0, windowX, windowY);
@@ -228,8 +234,8 @@ namespace DeGame
         {
             int celX = x + OverheadX;
             int celY = y + OverheadY;
-            celX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(celX) / Convert.ToDecimal(CellSize))) * CellSize;
-            celY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(celY) / Convert.ToDecimal(CellSize))) * CellSize;
+            celX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(celX)/Convert.ToDecimal(CellSize)))*CellSize;
+            celY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(celY)/Convert.ToDecimal(CellSize)))*CellSize;
             if (typeCel == Enums.Object.StartPoint || typeCel == Enums.Object.Destination)
             {
                 foreach (Cel cel in _cells)
@@ -262,7 +268,7 @@ namespace DeGame
                     botY = _bots[a].LocationY - CellSize;
                     botX = _bots[a].LocationX;
                 }
-                else if (DetectPlayer(_bots[a].LocationX,_bots[a].LocationY + CellSize))
+                else if (DetectPlayer(_bots[a].LocationX, _bots[a].LocationY + CellSize))
                 {
                     botY = _bots[a].LocationY + CellSize;
                     botX = _bots[a].LocationX;
@@ -272,7 +278,7 @@ namespace DeGame
                     botY = _bots[a].LocationY;
                     botX = _bots[a].LocationX - CellSize;
                 }
-                else if (DetectPlayer( _bots[a].LocationX + CellSize,_bots[a].LocationY))
+                else if (DetectPlayer(_bots[a].LocationX + CellSize, _bots[a].LocationY))
                 {
                     botY = _bots[a].LocationY;
                     botX = _bots[a].LocationX + CellSize;
@@ -307,7 +313,7 @@ namespace DeGame
 
                 Cel cel = GetSingleCell(botX, botY);
 
-                if (botX > CellSize * (MapSize - 1) || botX < 0 || botY > CellSize * (MapSize - 1) || botY < 0)
+                if (botX > CellSize*(MapSize - 1) || botX < 0 || botY > CellSize*(MapSize - 1) || botY < 0)
                 {
                     botMove = false;
                 }
@@ -317,7 +323,7 @@ namespace DeGame
                 }
                 if (botMove)
                 {
-                    _bots[a].Move(cel);
+                    _bots[a].Move(cel.GetX(), cel.GetY());
                 }
             }
         }
@@ -331,7 +337,7 @@ namespace DeGame
             foreach (Bot bot in _bots.Where(bot => bot.LocationX == _player.LocationX && bot.LocationY == _player.LocationY && bot.IsKilled() == false))
             {
                 // check if _player has star powerup
-                if (_player.powerUp != Enums.TypePowerUp.MarioStar) return _player.RemoveHitpoints(bot.Strength);
+                if (_player.PowerUp != Enums.TypePowerUp.MarioStar) return _player.RemoveHitpoints(bot.Strength);
                 bot.Kill();
                 return PlayerStatus.Alive;
             }
@@ -360,13 +366,29 @@ namespace DeGame
             int newX = _player.LocationX;
             int newY = _player.LocationY;
 
-            if (directionKeys[0]) { newY -= CellSize; _player.Direction = Direction.Up; }
+            if (directionKeys[0])
+            {
+                newY -= CellSize;
+                _player.Direction = Direction.Up;
+            }
 
-            if (directionKeys[1]) { newX -= CellSize; _player.Direction = Direction.Left; }
+            if (directionKeys[1])
+            {
+                newX -= CellSize;
+                _player.Direction = Direction.Left;
+            }
 
-            if (directionKeys[2]) { newY += CellSize; _player.Direction = Direction.Down; }
+            if (directionKeys[2])
+            {
+                newY += CellSize;
+                _player.Direction = Direction.Down;
+            }
 
-            if (directionKeys[3]) { newX += CellSize; _player.Direction = Direction.Right; }
+            if (directionKeys[3])
+            {
+                newX += CellSize;
+                _player.Direction = Direction.Right;
+            }
 
             foreach (Cel cel in _cells.Where(cel => cel.GetX() == newX && cel.GetY() == newY))
             {
@@ -377,7 +399,7 @@ namespace DeGame
                 break;
             }
 
-            if (newX > CellSize * (MapSize - 1) || newX < 0 || newY > CellSize * (MapSize - 1) || newY < 0)
+            if (newX > CellSize*(MapSize - 1) || newX < 0 || newY > CellSize*(MapSize - 1) || newY < 0)
             {
                 playerMove = false;
             }
@@ -386,9 +408,9 @@ namespace DeGame
 
             _player.Move(newX, newY);
 
-            if (_player.powerUp == Enums.TypePowerUp.None)
+            if (_player.PowerUp == Enums.TypePowerUp.None)
             {
-                _player.powerUp = CheckPlayerOnPowerUp(newX, newY);
+                _player.PowerUp = CheckPlayerOnPowerUp(newX, newY);
             }
         }
 
@@ -410,7 +432,7 @@ namespace DeGame
                     return cel.GetPowerUp().TypePowerUp;
                 }
             }
-            
+
             return Enums.TypePowerUp.None;
         }
 
@@ -434,24 +456,28 @@ namespace DeGame
             {
                 OverheadX = _player.LocationX - 500;
 
-                if (OverheadX + windowX > CellSize * MapSize)
+                if (OverheadX + windowX > CellSize*MapSize)
                 {
-                    OverheadX = (CellSize * MapSize) - windowX;
+                    OverheadX = (CellSize*MapSize) - windowX;
                 }
             }
-            else {
+            else
+            {
                 OverheadX = 0;
             }
 
             if (_player.LocationY > 500)
             {
                 OverheadY = _player.LocationY - 500;
-                if (OverheadY + windowY > CellSize * MapSize)
+                if (OverheadY + windowY > CellSize*MapSize)
                 {
-                    OverheadY = (CellSize * MapSize) - windowY;
+                    OverheadY = (CellSize*MapSize) - windowY;
                 }
             }
-            else { OverheadY = 0; }
+            else
+            {
+                OverheadY = 0;
+            }
         }
 
         /// <summary>
@@ -462,20 +488,14 @@ namespace DeGame
         /// <returns></returns>
         public List<Cel> GetCells(int windowX, int windowY)
         {
-            List<Cel> windowCells = new List<Cel>();
-
             CalculateOverhead(windowX, windowY);
 
-            foreach (Cel cel in _cells)
-            {
-                if(cel.GetX() >= OverheadX && cel.GetX() <= windowX + CellSize + OverheadX && 
-                    cel.GetY() >= OverheadY && cel.GetY() <= windowY + CellSize + OverheadY)
-                {
-                    windowCells.Add(cel);
-                }
-            }
-
-            return windowCells;
+            return _cells.Where(cel => 
+                cel.GetX() >= OverheadX && 
+                cel.GetX() <= windowX + CellSize + OverheadX && 
+                cel.GetY() >= OverheadY && 
+                cel.GetY() <= windowY + CellSize + OverheadY)
+                .ToList();
         }
 
         /// <summary>
@@ -486,21 +506,15 @@ namespace DeGame
         /// <returns>List with _bots in window.</returns>
         public List<Bot> GetBots(int windowX, int windowY)
         {
-            List<Bot> windowsBots = new List<Bot>();
-
             CalculateOverhead(windowX, windowY);
 
-            foreach (Bot bot in _bots)
-            {
-                if (bot.LocationX >= OverheadX && bot.LocationX <= windowX + CellSize + OverheadX && 
-                    bot.LocationY >= OverheadY && bot.LocationY <= windowY + CellSize + OverheadY && 
-                    bot.IsKilled() == false)
-                {
-                    windowsBots.Add(bot);
-                }
-            }
-
-            return windowsBots;
+            return _bots.Where(bot => 
+                bot.LocationX >= OverheadX && 
+                bot.LocationX <= windowX + CellSize + OverheadX && 
+                bot.LocationY >= OverheadY && 
+                bot.LocationY <= windowY + CellSize + OverheadY && 
+                bot.IsKilled() == false)
+                .ToList();
         }
 
         /// <summary>
@@ -511,15 +525,7 @@ namespace DeGame
         /// <returns>If a bot was found on this position</returns>
         public bool DetectBot(int x, int y)
         {
-            foreach (Bot bot in _bots)
-            {
-                if (bot.LocationX == x && bot.LocationY == y)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return _bots.Any(bot => bot.LocationX == x && bot.LocationY == y);
         }
 
         /// <summary>
@@ -530,13 +536,7 @@ namespace DeGame
         /// <returns>If the _player was found on this position</returns>
         public bool DetectPlayer(int x, int y)
         {
-            
-            if (_player.LocationX == x && _player.LocationY == y)
-            {
-                return true;
-            }
-            
-            return false;
+            return _player.LocationX == x && _player.LocationY == y;
         }
 
         /// <summary>
@@ -544,28 +544,28 @@ namespace DeGame
         /// </summary>
         public void MakeDefaultMap()
         {
-            for (int i = 0; i < MapSize * MapSize; i++)
+            for (int i = 0; i < MapSize*MapSize; i++)
             {
-                int y = Convert.ToInt32(Math.Floor(Convert.ToDecimal(i) / Convert.ToDecimal(MapSize)));
-                int x = (i) - (y * MapSize);
+                int y = Convert.ToInt32(Math.Floor(Convert.ToDecimal(i)/Convert.ToDecimal(MapSize)));
+                int x = (i) - (y*MapSize);
 
                 switch (i)
                 {
                     default:
-                        if (_Random.Next(0, 7) == 5)
+                        if (_Random.Next(0, 2) == 1)
                         {
-                            _cells.Add(new Cel(Enums.Object.Wall, x * CellSize, y * CellSize));
+                            _cells.Add(new Cel(Enums.Object.Wall, x*CellSize, y*CellSize));
                         }
                         else
                         {
-                            _cells.Add(new Cel(Enums.Object.Grass, x * CellSize, y * CellSize));
+                            _cells.Add(new Cel(Enums.Object.Grass, x*CellSize, y*CellSize));
                         }
                         break;
                 }
             }
 
-            _cells[_Random.Next(1, MapSize * MapSize)].SetObject(Enums.Object.Destination);
-            _cells[_Random.Next(1, MapSize * MapSize)].SetObject(Enums.Object.StartPoint);
+            _cells[_Random.Next(1, MapSize*MapSize)].SetObject(Enums.Object.Destination);
+            _cells[_Random.Next(1, MapSize*MapSize)].SetObject(Enums.Object.StartPoint);
 
             GenerateBots();
             GeneratePowerUps();
@@ -584,16 +584,16 @@ namespace DeGame
             {
                 do
                 {
-                    botX = _Random.Next(CellSize * MapSize);
-                    botY = _Random.Next(CellSize * MapSize);
+                    botX = _Random.Next(CellSize*MapSize);
+                    botY = _Random.Next(CellSize*MapSize);
 
-                    botX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botX) / Convert.ToDecimal(CellSize))) * CellSize;
-                    botY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botY) / Convert.ToDecimal(CellSize))) * CellSize;
+                    botX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botX)/Convert.ToDecimal(CellSize)))*CellSize;
+                    botY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botY)/Convert.ToDecimal(CellSize)))*CellSize;
                     cel = GetSingleCell(botX, botY);
                 } while (cel.GetTypeCel() != Enums.Object.Grass || DetectBot(botX, botY));
 
                 _bots.Add(new Bot());
-                _bots[a].Move(cel);
+                _bots[a].Move(cel.GetX(), cel.GetY());
             }
         }
 
@@ -611,12 +611,71 @@ namespace DeGame
             {
                 do
                 {
-                    powerUpCellIndex = _Random.Next(MapSize * MapSize);
-                }
-                while (_cells[powerUpCellIndex].GetTypeCel() != Enums.Object.Grass || _cells[powerUpCellIndex].GetPowerUp() != null);
+                    powerUpCellIndex = _Random.Next(MapSize*MapSize);
+                } while (_cells[powerUpCellIndex].GetTypeCel() != Enums.Object.Grass || _cells[powerUpCellIndex].GetPowerUp() != null);
 
                 _cells[powerUpCellIndex].SetPowerUp(new PowerUp(typePowerUp));
             }
+        }
+
+        public void PlayerShoots()
+        {
+            _bullets.Add( new Bullet(_player.Direction, _player.LocationX, _player.LocationY, CellSize));
+
+            CheckBulletsCollision();
+        }
+
+        private void CheckBulletsCollision()
+        {
+            foreach (Bullet bullet in _bullets.Where(bullet => !bullet.Destroyed))
+            {
+                foreach (Cel cel in _cells.Where(cel => cel.GetX() == bullet.LocationX && cel.GetY() == bullet.LocationY && cel.GetTypeCel() == Object.Wall))
+                {
+                    cel.SetObject(Object.Grass);
+                    bullet.Destroy();
+                }
+
+                foreach (Bot bot in _bots.Where(bot =>bot.LocationX == bullet.LocationX && bot.LocationY == bullet.LocationY  && bot.IsKilled() == false))
+                {
+                    bot.Kill();
+                    bullet.Destroy();
+                }
+
+                if (bullet.LocationX < 0 || bullet.LocationX > CellSize*MapSize || bullet.LocationY < 0 ||
+                    bullet.LocationY > MapSize*CellSize)
+                {
+                    bullet.Destroy();
+                }
+            }
+        }
+
+        public void MoveBullets()
+        {
+            foreach (Bullet bullet in _bullets)
+            {
+                int x = bullet.LocationX;
+                int y = bullet.LocationY;
+
+                switch (bullet.Direction)
+                {
+                    case Direction.Up:
+                        y -= CellSize;
+                        break;
+                    case Direction.Down:
+                        y += CellSize;
+                        break;
+                    case Direction.Left:
+                        x -= CellSize;
+                        break;
+                    case Direction.Right:
+                        x += CellSize;
+                        break;
+                }
+
+                bullet.Move(x, y);
+            }
+
+            CheckBulletsCollision();
         }
     }
 }

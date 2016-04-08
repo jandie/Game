@@ -1,47 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DeGame.Classes;
-using DeGame.Enums;
-
+﻿
 namespace DeGame.Classes
 {
     public class Bot : Entity
     {
-        private int strength;
-        private bool killed;
-        private Cel celCurrentlyIn;
+        private bool _killed;
+        private int _health;
 
-        public int Strength { get { return strength; } }
-        public Cel CelCurrentlyIn { get { return celCurrentlyIn; } }
+        public int Strength { get; }
 
         public Bot()
         {
-            killed = false;
-            LocationX = 0;
-            LocationY = 0;
-            PrevLocationX = 0;
-            PrevLocationY = 0;
-            strength = 100;
-        }
-
-        public void Move(Cel cel)
-        {
-            LocationX = cel.GetX();
-            LocationY = cel.GetY();
-            celCurrentlyIn = cel;
+            _killed = false;
+            _health = 100;
+            Strength = 100;
         }
 
         public void Kill()
         {
-            killed = true;
+            _killed = true;
         }
 
         public bool IsKilled()
         {
-            return killed;
+            return _killed;
+        }
+
+        public bool Damage(int strength)
+        {
+            _health -= strength;
+
+            if (_health < 1)
+            {
+                Kill();
+                return false;
+            }
+
+            return true;
         }
     }
 }

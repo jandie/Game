@@ -1,48 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DeGame.Classes;
-using DeGame.Enums;
+﻿using DeGame.Enums;
 
-namespace DeGame
+namespace DeGame.Classes
 {
     public class Player : Entity
     {
         
-        private int hitpoints;
+        private int _hitpoints;
 
-        public Enums.TypePowerUp powerUp { get; set; }
-        public Direction Direction { get; set; }
+        public Enums.TypePowerUp PowerUp { get; set; }
+        
 
         public Player()
         {
-            hitpoints = 100;
-            LocationX = 0;
-            LocationY = 0;
-            PrevLocationX = 0;
-            PrevLocationY = 0;
-            powerUp = Enums.TypePowerUp.None;
-        }
-
-        public void Move(int x, int y)
-        {
-            PrevLocationX = LocationX;
-            PrevLocationY = LocationY;
-            LocationX = x;
-            LocationY = y;
-        }
-
-        public void PickUpPowerUp()
-        {
-            throw new System.NotImplementedException();
+            _hitpoints = 100;
+            PowerUp = Enums.TypePowerUp.None;
         }
 
         public Enums.PlayerStatus RemoveHitpoints(int amount)
         {
-            hitpoints -= amount;
+            _hitpoints -= amount;
 
-            if (hitpoints < 1)
+            if (_hitpoints < 1)
             {
                 return PlayerStatus.Dead;
             }

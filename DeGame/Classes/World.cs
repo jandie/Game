@@ -1,42 +1,35 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using DeGame.Classes;
-using System.IO;
 
-namespace DeGame
+namespace DeGame.Classes
 {
     [DataContract]
     public class World
     {
-        World world;
-        private bool[] directionKeys;
-        private List<Map> maps;
-        private int currentMap;
+        private readonly bool[] _directionKeys;
+        private List<Map> _maps;
+        private int _currentMap;
         [DataMember]
-        private int score;
-        private int windowX;
-        private int windowY;
-        private Graphics gr;
-        Database Database;
+        private int _score;
+        private int _windowX;
+        private int _windowY;
+        private Graphics _gr;
+        readonly Database _database;
 
-        public int CurrentLevel { get { return currentMap; }}
-        public int CurrentScore { get { return score; } set{ score = value; } }
+        public int CurrentLevel => _currentMap;
+        public int CurrentScore { get { return _score; } set{ _score = value; } }
 
         public World(Graphics gr, World world, int windowX, int windowY)
         {
-            maps = new List<Map>();
-            directionKeys = new bool[4];
-            Database = new Database();
+            _maps = new List<Map>();
+            _directionKeys = new bool[4];
+            _database = new Database();
 
-            currentMap = 0;
-            this.gr = gr;
-            this.windowX = windowX;
-            this.windowY = windowY;
-            this.world = world;
+            _currentMap = 0;
+            this._gr = gr;
+            this._windowX = windowX;
+            this._windowY = windowY;
         }
 
         /// <summary>
@@ -46,25 +39,25 @@ namespace DeGame
         /// <param name="windowY">Window height</param>
         public void UpdateWindow(int windowX, int windowY)
         {
-            this.windowX = windowX;
-            this.windowY = windowY;
+            this._windowX = windowX;
+            this._windowY = windowY;
         }
 
-        public void KeyDown(string key)
+        public void KeyUp(string key)
         {
             switch (key.ToLower())
             {
                 case "w":
-                    directionKeys[0] = false;
+                    _directionKeys[0] = false;
                     break;
                 case "a":
-                    directionKeys[1] = false;
+                    _directionKeys[1] = false;
                     break;
                 case "s":
-                    directionKeys[2] = false;
+                    _directionKeys[2] = false;
                     break;
                 case "d":
-                    directionKeys[3] = false;
+                    _directionKeys[3] = false;
                     break;
             }
         }
@@ -72,27 +65,27 @@ namespace DeGame
         /// <summary>
         /// Checks a key update to determine and do what needs to happen.
         /// </summary>
-        /// <param name="keyChar">Char of the pressed key</param>
+        /// <param name="key">key pressed</param>
         /// <param name="mouseX">X position of the mouse</param>
         /// <param name="mouseY">Y position of the mouse</param>
-        public void KeyUpdate(string key, int mouseX, int mouseY)
+        public void KeyDown(string key, int mouseX, int mouseY)
         {
-            Player player = maps[currentMap].GetPlayer();
+            Player player = _maps[_currentMap].GetPlayer();
             bool otherThanDirection = false;
 
             switch (key.ToLower())
             {
                 case "w":
-                    directionKeys[0] = true;
+                    _directionKeys[0] = true;
                     break;
                 case "a":
-                    directionKeys[1] = true;
+                    _directionKeys[1] = true;
                     break;
                 case "s":
-                    directionKeys[2] = true;
+                    _directionKeys[2] = true;
                     break;
                 case "d":
-                    directionKeys[3] = true;
+                    _directionKeys[3] = true;
                     break;
                 case "z":
                     PlaceObject(Enums.Object.Grass, mouseX, mouseY);
@@ -108,6 +101,10 @@ namespace DeGame
                     break;
                 case "v":
                     PlaceObject(Enums.Object.Destination, mouseX, mouseY);
+                    otherThanDirection = true;
+                    break;
+                case "space":
+                    _maps[_currentMap].PlayerShoots();
                     otherThanDirection = true;
                     break;
                 case "r":
@@ -128,16 +125,16 @@ namespace DeGame
         /// </summary>
         private void CheckPlayerAndBots()
         {
-            Enums.PlayerStatus playerAlive = maps[currentMap].CheckBotOnPlayer();
+            Enums.PlayerStatus playerAlive = _maps[_currentMap].CheckBotOnPlayer();
 
             switch (playerAlive)
             {
                 case Enums.PlayerStatus.Dead:
                     Reset();
-                    score -= 300;
+                    _score -= 300;
                     break;
                 case Enums.PlayerStatus.Win:
-                    score += 1000;
+                    _score += 1000;
                     NextLevel();
                     Reset();
                     break;
@@ -149,7 +146,7 @@ namespace DeGame
         /// </summary>
         public void Draw()
         {
-            maps[currentMap].DrawCellsPlayerAndBots(gr, windowX, windowY);
+            _maps[_currentMap].DrawCellsAndEntities(_gr, _windowX, _windowY);
             CheckPlayerAndBots();
         }
 
@@ -158,11 +155,11 @@ namespace DeGame
         /// </summary>
         public void NextLevel()
         {
-            currentMap++;
+            _currentMap++;
 
-            if (currentMap > 9)
+            if (_currentMap > 9)
             {
-                currentMap = 0;
+                _currentMap = 0;
             }
         }
 
@@ -172,17 +169,17 @@ namespace DeGame
         /// </summary>
         public void LoadMap()
         {
-            maps = Database.LoadAllMaps();
+            _maps = _database.LoadAllMaps();
 
-            if (maps == null)
+            if (_maps == null)
             {
-                maps = new List<Map>();
+                _maps = new List<Map>();
 
                 for (int i = 0; i < 10; i++)
                 {
-                    Map map = new Map(100, 30, 30, false);
+                    Map map = new Map(100, 100, 100, false);
 
-                    maps.Add(map);
+                    _maps.Add(map);
                 }
 
                 //Database.SaveAllMaps(maps);
@@ -196,9 +193,9 @@ namespace DeGame
         /// </summary>
         public void Reset()
         {
-            maps[currentMap].ResetPlayer();
-            maps[currentMap].ResetBots();
-            maps[currentMap].ResetPowerUps();
+            _maps[_currentMap].ResetPlayer();
+            _maps[_currentMap].ResetBots();
+            _maps[_currentMap].ResetPowerUps();
         }
 
         /// <summary>
@@ -209,7 +206,7 @@ namespace DeGame
         /// <param name="y">The y coördinate of the cell</param>
         public void PlaceObject(Enums.Object typeCel, int x, int y)
         {
-            maps[currentMap].PlaceObject(typeCel, x, y);
+            _maps[_currentMap].PlaceObject(typeCel, x, y);
         }
 
         /// <summary>
@@ -217,7 +214,7 @@ namespace DeGame
         /// </summary>
         public void MoveAllBots()
         {
-            maps[currentMap].MoveBots();
+            _maps[_currentMap].MoveBots();
         }
 
         /// <summary>
@@ -225,10 +222,15 @@ namespace DeGame
         /// </summary>
         public void MovePlayer()
         {
-            maps[currentMap].MovePlayer(directionKeys);
+            _maps[_currentMap].MovePlayer(_directionKeys);
 
             Draw();
             CheckPlayerAndBots();
+        }
+
+        public void MoveAllBullets()
+        {
+            _maps[_currentMap].MoveBullets();
         }
     }
 }

@@ -26,13 +26,13 @@ namespace DeGame
 
             _gr = pnlScreen.CreateGraphics();
             _world = new World(_gr, _world, windowX, windowY);
-            LoadScore();
+            //LoadScore();
 
             _world.LoadMap();
             
             tmrMoveBots.Interval = 800;
             tmrMoveBots.Start();
-            tmrMovePlayer.Interval = 1;
+            tmrMovePlayer.Interval = 100;
             tmrMovePlayer.Start();
 
             this.Size = new Size(windowX, windowY);
@@ -41,7 +41,7 @@ namespace DeGame
 
         void RefreshStats()
         {
-            this.Text = Resources.frmScreen_RefreshStats_The_Game___Level__ + _world.CurrentLevel + Resources.frmScreen_RefreshStats____Score__ + _world.CurrentScore;
+            this.Text = Resources.frmScreen_RefreshStats_The_Game___Level__ + _world.CurrentLevel;
         }
 
         private void frmScreen_Paint(object sender, PaintEventArgs e)
@@ -88,45 +88,45 @@ namespace DeGame
         /// <summary>
         /// Saves the current score.
         /// </summary>
-        void SaveScore()
-        {
-            DataContractSerializer dcs = new DataContractSerializer(typeof(World));
+        //void SaveScore()
+        //{
+        //    DataContractSerializer dcs = new DataContractSerializer(typeof(World));
 
-            using (FileStream f = new FileStream("file.xml",
-                   FileMode.Create, FileAccess.Write))
-            {
-                dcs.WriteObject(f, _world);            // Wegschrijven
+        //    using (FileStream f = new FileStream("file.xml",
+        //           FileMode.Create, FileAccess.Write))
+        //    {
+        //        dcs.WriteObject(f, _world);            // Wegschrijven
 
-                f.Close();
-            }
-        }
+        //        f.Close();
+        //    }
+        //}
 
         /// <summary>
         /// Loads last score
         /// </summary>
-        void LoadScore()
-        {
-            DataContractSerializer dcs = new DataContractSerializer(typeof(World));
+        //void LoadScore()
+        //{
+        //    DataContractSerializer dcs = new DataContractSerializer(typeof(World));
 
-            try
-            {
-                using (FileStream f = new FileStream("file.xml",
-                                  FileMode.Open, FileAccess.Read))
-                {
-                    World tempWorld = dcs.ReadObject(f) as World; // Uitlezen
+        //    try
+        //    {
+        //        using (FileStream f = new FileStream("file.xml",
+        //                          FileMode.Open, FileAccess.Read))
+        //        {
+        //            World tempWorld = dcs.ReadObject(f) as World; // Uitlezen
 
-                    if (tempWorld != null) _world.CurrentScore = tempWorld.CurrentScore;
+        //            if (tempWorld != null) _world.CurrentScore = tempWorld.CurrentScore;
 
-                    f.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                string error = e.ToString();
-            }
+        //            f.Close();
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string error = e.ToString();
+        //    }
             
             
-        }
+        //}
 
         /// <summary>
         /// saves score when form is being closed
@@ -135,7 +135,7 @@ namespace DeGame
         /// <param name="e"></param>
         private void frmScreen_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SaveScore();
+            //SaveScore();
         }
 
         private void frmScreen_KeyDown(object sender, KeyEventArgs e)

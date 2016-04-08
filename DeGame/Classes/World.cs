@@ -12,14 +12,12 @@ namespace DeGame.Classes
         private List<Map> _maps;
         private int _currentMap;
         [DataMember]
-        private int _score;
         private int _windowX;
         private int _windowY;
         private Graphics _gr;
         readonly Database _database;
 
         public int CurrentLevel => _currentMap;
-        public int CurrentScore { get { return _score; } set{ _score = value; } }
 
         public World(Graphics gr, World world, int windowX, int windowY)
         {
@@ -123,6 +121,7 @@ namespace DeGame.Classes
         /// <summary>
         /// Checks if a bot is in the same cell as a player.
         /// If the player dies, the map gets reset.
+        /// If the player dies, the map gets reset.
         /// </summary>
         private void CheckPlayerAndBots()
         {
@@ -132,10 +131,8 @@ namespace DeGame.Classes
             {
                 case Enums.PlayerStatus.Dead:
                     Reset();
-                    _score -= 300;
                     break;
                 case Enums.PlayerStatus.Win:
-                    _score += 1000;
                     NextLevel();
                     Reset();
                     break;

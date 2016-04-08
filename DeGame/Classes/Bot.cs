@@ -26,17 +26,17 @@ namespace DeGame.Classes
             return _killed;
         }
 
-        public bool Damage(int strength)
+        public int Damage(int strength)
         {
             _health -= strength;
 
             if (_health < 1)
             {
                 Kill();
-                return false;
+                return 100;
             }
 
-            return true;
+            return 0;
         }
     }
 }

@@ -31,6 +31,7 @@ namespace DeGame.Classes
         /// </summary>
         public int MapSize { get; set; }
         public int AmountOfBots { get; set; }
+        public int Score { get; private set; }
 
         public Map(int cellSize, int mapSize, int amountOfBots, bool loadedMap)
         {
@@ -83,6 +84,7 @@ namespace DeGame.Classes
             List<Bot> botsToDraw = GetBots(windowX, windowY);
             Image image;
             Point plaats;
+            SizeF size;
             Brush brush = new SolidBrush(Color.Gold);
             Brush brushBot = new SolidBrush(Color.Black);
             Font font = new Font(FontFamily.GenericMonospace, 20, FontStyle.Bold);
@@ -132,9 +134,11 @@ namespace DeGame.Classes
                     }
 
                     plaats = new Point(_player.LocationX - OverheadX, _player.LocationY - OverheadY);
+                    size = screenGraphics.MeasureString(_player.Hitpoints.ToString(), font);
 
                     screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
-                    screenGraphics.DrawString(_player.Hitpoints.ToString(), font, brush, plaats.X, plaats.Y);
+                    screenGraphics.FillRectangle(brushBot, plaats.X, plaats.Y - size.Height, size.Width, size.Height);
+                    screenGraphics.DrawString(_player.Hitpoints.ToString(), font, brush, plaats.X, plaats.Y - size.Height);
                 }
 
                 //Draw _bots
@@ -156,14 +160,24 @@ namespace DeGame.Classes
                 image = DeGame.Properties.Resources.bot;
                 plaats = new Point(bot.LocationX - OverheadX, bot.LocationY - OverheadY);
 
+                size = screenGraphics.MeasureString(bot.Hitpoints.ToString(), font);
+                
+                screenGraphics.FillRectangle(brushBot, plaats.X, plaats.Y - size.Height, size.Width, size.Height);
+
                 screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
-                screenGraphics.DrawString(bot.Hitpoints.ToString(), font, brushBot, plaats.X, plaats.Y);
+                screenGraphics.DrawString(bot.Hitpoints.ToString(), font, brush, plaats.X, plaats.Y - size.Height);
             }
 
             foreach (Bullet bullet in _bullets.Where(b => b.LocationX >= OverheadX && b.LocationY >= OverheadY && b.LocationX <= OverheadX + windowX && b.LocationY <= windowY + OverheadY && !b.Destroyed))
             {
                 screenGraphics.FillEllipse(brush, bullet.LocationX - OverheadX + (CellSize / 2), bullet.LocationY - OverheadY + (CellSize / 2), CellSize / 4, CellSize / 4);
             }
+
+            size = screenGraphics.MeasureString("Score :" + Score, font);
+
+            screenGraphics.FillRectangle(brushBot, 50, 50, size.Width, size.Height);
+
+            screenGraphics.DrawString("Score :" + Score, font, brush, 50, 50);
 
             gr.DrawImage(screen, 0, 0, windowX, windowY);
 
@@ -336,15 +350,34 @@ namespace DeGame.Classes
         /// <returns>Returns the status of a _player</returns>
         public Enums.PlayerStatus CheckBotOnPlayer()
         {
+            PlayerStatus status;
+
             foreach (Bot bot in _bots.Where(bot => bot.LocationX == _player.LocationX && bot.LocationY == _player.LocationY && bot.IsKilled() == false))
             {
-                // check if _player has star powerup
-                if (_player.PowerUp != Enums.TypePowerUp.MarioStar) return _player.RemoveHitpoints(bot.Strength);
+                if (_player.PowerUp != Enums.TypePowerUp.MarioStar)
+                {
+                    status = _player.RemoveHitpoints(bot.Strength);
+
+                    if (status == PlayerStatus.Dead) Score -= 500;
+
+                    return status;
+                }
+
                 bot.Kill();
+                Score += 500;
+
                 return PlayerStatus.Alive;
             }
 
-            return _cells.Any(cel => cel.GetX() == _player.LocationX && cel.GetY() == _player.LocationY && cel.GetTypeCel() == Enums.Object.Destination) ? PlayerStatus.Win : PlayerStatus.Alive;
+            status = _cells.Any(cel => cel.GetX() == _player.LocationX && cel.GetY() == _player.LocationY && cel.GetTypeCel() == Enums.Object.Destination)
+                ? PlayerStatus.Win : PlayerStatus.Alive;
+
+            if (status == PlayerStatus.Win)
+            {
+                Score += 1000;
+            }
+
+            return status;
         }
 
         /// <summary>
@@ -639,7 +672,7 @@ namespace DeGame.Classes
 
                 foreach (Bot bot in _bots.Where(bot =>bot.LocationX == bullet.LocationX && bot.LocationY == bullet.LocationY  && bot.IsKilled() == false))
                 {
-                    bot.Damage(bullet.ImpactStrenth);
+                    Score += bot.Damage(bullet.ImpactStrenth);
                     bullet.Destroy();
                 }
 

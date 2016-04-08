@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.121.2.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite">
@@ -67,7 +68,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\World.cs" />
-    <Compile Include="Repository\IGameContext.cs" />
+    <Compile Include="Repository\IGameRepo.cs" />
     <EmbeddedResource Include="frmScreen.resx">
       <DependentUpon>frmScreen.cs</DependentUpon>
     </EmbeddedResource>

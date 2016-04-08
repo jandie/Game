@@ -10,27 +10,30 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.Serialization;
 using System.IO;
+using System.Reflection;
 
 namespace DeGame
 {
     public partial class frmScreen : Form
     {
-        private World world;
-        private int mouseX;
-        private int mouseY;
+        private World _world;
+        private int _mouseX;
+        private int _mouseY;
         private int windowX = 1400;
         private int windowY = 900;
-        private Graphics gr;
+        private Graphics _gr;
         
         public frmScreen()
         {
             InitializeComponent();
-            
-            gr = CreateGraphics();
-            world = new World(gr, world, windowX, windowY);
+
+            typeof(Panel).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, pnlScreen, new object[] { true });
+
+            _gr = pnlScreen.CreateGraphics();
+            _world = new World(_gr, _world, windowX, windowY);
             LoadScore();
 
-            world.LoadMap();
+            _world.LoadMap();
             
             tmrMoveBots.Interval = 800;
             tmrMoveBots.Start();
@@ -43,42 +46,42 @@ namespace DeGame
 
         void RefreshStats()
         {
-            this.Text = "The Game - Level: " + world.CurrentLevel + " - Score: " + world.CurrentScore;
+            this.Text = "The Game - Level: " + _world.CurrentLevel + " - Score: " + _world.CurrentScore;
         }
 
         private void frmScreen_Paint(object sender, PaintEventArgs e)
         {
-            world.Draw();
+            _world.Draw();
         }
 
         private void frmScreen_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //world.KeyUpdate(e.KeyChar, mouseX, mouseY);
+            //world.KeyUpdate(e.KeyChar, _mouseX, mouseY);
             //RefreshStats();
         }
 
         private void tmrMoveBots_Tick(object sender, EventArgs e)
         {
-            world.MoveAllBots();
-            world.Draw();
+            _world.MoveAllBots();
+            _world.Draw();
         }
 
         private void frmScreen_MouseMove(object sender, MouseEventArgs e)
         {
-            mouseX = e.X;
-            mouseY = e.Y;
+            _mouseX = e.X;
+            _mouseY = e.Y;
         }
 
         private void frmScreen_SizeChanged(object sender, EventArgs e)
         {
             frmScreen screen = sender as frmScreen;
 
-            world.UpdateWindow(screen.Width, screen.Height);
+            if (screen != null) _world.UpdateWindow(screen.Width, screen.Height);
         }
 
         private void tmrMovePlayer_Tick(object sender, EventArgs e)
         {
-            world.MovePlayer();
+            _world.MovePlayer();
         }
 
         /// <summary>
@@ -91,7 +94,7 @@ namespace DeGame
             using (FileStream f = new FileStream("file.xml",
                    FileMode.Create, FileAccess.Write))
             {
-                dcs.WriteObject(f, world);            // Wegschrijven
+                dcs.WriteObject(f, _world);            // Wegschrijven
 
                 f.Close();
             }
@@ -111,12 +114,15 @@ namespace DeGame
                 {
                     World tempWorld = dcs.ReadObject(f) as World; // Uitlezen
 
-                    world.CurrentScore = tempWorld.CurrentScore;
-                    
+                    if (tempWorld != null) _world.CurrentScore = tempWorld.CurrentScore;
+
                     f.Close();
                 }
             }
-            catch { }
+            catch (Exception e)
+            {
+                string error = e.ToString();
+            }
             
             
         }
@@ -133,13 +139,13 @@ namespace DeGame
 
         private void frmScreen_KeyDown(object sender, KeyEventArgs e)
         {
-            world.KeyUpdate(e.KeyData.ToString(), mouseX, mouseY);
+            _world.KeyUpdate(e.KeyData.ToString(), _mouseX, _mouseY);
             RefreshStats();
         }
 
         private void frmScreen_KeyUp(object sender, KeyEventArgs e)
         {
-            world.KeyDown(e.KeyData.ToString());
+            _world.KeyDown(e.KeyData.ToString());
             RefreshStats();
         }
     }

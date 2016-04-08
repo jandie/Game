@@ -185,7 +185,7 @@ namespace DeGame
                     maps.Add(map);
                 }
 
-                Database.SaveAllMaps(maps);
+                //Database.SaveAllMaps(maps);
             }
 
             Draw();

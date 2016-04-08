@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DeGame.Repository
 {
-    interface IGameContext
+    interface IGameRepo
     {
         List<Map> LoadAllMaps();
 

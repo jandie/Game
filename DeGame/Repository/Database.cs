@@ -11,17 +11,17 @@ using DeGame;
 
 namespace DeGame
 {
-    public class Database : Repository.IGameContext 
+    public class Database : Repository.IGameRepo 
     {
         private readonly string databaseFilename = "DeGame.sqlite";
-        private SQLiteConnection connection;
+        private SQLiteConnection _connection;
 
         public string Query
         {
             set
             {
                 PrepareConnection();
-                Command = new SQLiteCommand(value, connection);
+                Command = new SQLiteCommand(value, _connection);
             }
         }
 
@@ -34,18 +34,18 @@ namespace DeGame
         
         public void OpenConnection()
         {
-            if (connection.State != System.Data.ConnectionState.Open)
+            if (_connection.State != System.Data.ConnectionState.Open)
             {
-                connection.Open();
+                _connection.Open();
             }
         }
 
 
         public void CloseConnection()
         {
-            if (connection.State != System.Data.ConnectionState.Closed)
+            if (_connection.State != System.Data.ConnectionState.Closed)
             {
-                connection.Close();
+                _connection.Close();
             }
         }
 
@@ -58,9 +58,9 @@ namespace DeGame
                 SQLiteConnection.CreateFile(databaseFilename);
             }
             
-            if (connection == null)
+            if (_connection == null)
             {
-                connection = new SQLiteConnection("Data Source=" + databaseFilename + ";Version=3");
+                _connection = new SQLiteConnection("Data Source=" + databaseFilename + ";Version=3");
             }
 
             if (createNew)
@@ -170,6 +170,7 @@ namespace DeGame
             CloseConnection();
 
             OpenConnection();
+
             foreach (Map map in _maps)
             {
                 Query = "INSERT INTO MAP (CellSize, MapSize, AmountOfBots) values (@CellSize, @MapSize, @AmountOfBots);";

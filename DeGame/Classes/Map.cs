@@ -3,42 +3,45 @@ using System.Collections.Generic;
 using DeGame.Enums;
 using DeGame.Classes;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace DeGame
 {
     public class Map
     {
-        private Dictionary<string, Image> images;
+        private readonly Dictionary<string, Image> _images;
         
-        private List<Cel> cells;
-        private List<Bot> bots;
+        private List<Cel> _cells;
+        private List<Bot> _bots;
         /// <summary>
         /// size of one cell in pixels
         /// </summary>
         
-        private Player player;
-        private static readonly Random random = new Random();
+        private Player _player;
+        private static readonly Random _Random = new Random();
 
         public int OverheadX { get; private set; }
         public int OverheadY { get; private set; }
-        public List<Bot> Bots { get { return bots; } }
+        public List<Bot> Bots { get { return _bots; } }
         public int CellSize { get; set; }
         /// <summary>
-        /// amount of cells in height and width
+        /// amount of _cells in height and width
         /// </summary>
         public int MapSize { get; set; }
         public int AmountOfBots { get; set; }
 
         public Map(int cellSize, int mapSize, int amountOfBots, bool loadedMap)
         {
-            cells = new List<Cel>();
-            bots = new List<Bot>();
-            player = new Player();
+            _cells = new List<Cel>();
+            _bots = new List<Bot>();
+            _player = new Player();
 
-            images = new Dictionary<string, Image>();
-            images.Add("Grass", Properties.Resources.grass);
-            images.Add("Wall", Properties.Resources.wall);
+            _images = new Dictionary<string, Image>
+            {
+                {"Grass", Properties.Resources.grass},
+                {"Wall", Properties.Resources.wall}
+            };
 
             this.CellSize = cellSize;
             this.MapSize = mapSize;
@@ -54,11 +57,11 @@ namespace DeGame
 
         public void MovePlayerToBegin()
         {
-            foreach (Cel cel in cells)
+            foreach (Cel cel in _cells)
             {
                 if (cel.GetTypeCel() == Enums.Object.StartPoint)
                 {
-                    player.Move(cel.GetX(), cel.GetY() + 1 - 1);
+                    _player.Move(cel.GetX(), cel.GetY() + 1 - 1);
                 }
             }
         }
@@ -72,19 +75,23 @@ namespace DeGame
         /// <param name="windowY">Heigth of the main screen.</param>
         public void DrawCellsPlayerAndBots(Graphics gr, int windowX, int windowY)
         {
-            Image image;
-            Point plaats;
-
             List<Cel> cellsToDraw = GetCells(windowX, windowY);
             List<Bot> botsToDraw = GetBots(windowX, windowY);
+
+            //Bitmap screen = new Bitmap(windowX, windowY);
+            //Graphics screenGraphics = Graphics.FromImage(screen);
+
+            //screenGraphics.FillRectangle(Brushes.Red, 0, red, 200, 10);
+            //screenGraphics.FillRectangle(Brushes.White, 0, white, 200, 10);
 
 
             foreach (Cel cel in cellsToDraw)
             {
+                Image image;
                 switch (cel.GetTypeCel())
                 {
                     case Enums.Object.Wall:
-                        image = images["Wall"];
+                        image = _images["Wall"];
                         break;
                     case Enums.Object.Destination:
                         image = DeGame.Properties.Resources.destination;
@@ -94,17 +101,17 @@ namespace DeGame
                         break;
                     default:
                     case Enums.Object.Grass:
-                        image = images["Grass"];
+                        image = _images["Grass"];
                         break;
                 }
 
-                plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
+                var plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
                 gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
 
-                //Draw player
-                if (cel.GetX() == player.LocationX && cel.GetY() == player.LocationY)
+                //Draw _player
+                if (cel.GetX() == _player.LocationX && cel.GetY() == _player.LocationY)
                 {
-                    switch (player.Direction)
+                    switch (_player.Direction)
                     {
                         case Direction.Right:
                             image = DeGame.Properties.Resources.player_right;
@@ -120,12 +127,12 @@ namespace DeGame
                             break;
                     }
                     
-                    plaats = new Point(player.LocationX - OverheadX, player.LocationY - OverheadY);
+                    plaats = new Point(_player.LocationX - OverheadX, _player.LocationY - OverheadY);
 
                     gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
                 }
 
-                //Draw bots
+                //Draw _bots
                 foreach (Bot bot in botsToDraw)
                 {
                     if (bot.LocationX == cel.GetX() && bot.LocationY == cel.GetY())
@@ -150,9 +157,9 @@ namespace DeGame
             }
         }
 
-        public void SetCells(List<Cel> _cells)
+        public void SetCells(List<Cel> cells)
         {
-            cells = _cells;
+            this._cells = cells;
 
             GenerateBots();
             GeneratePowerUps();
@@ -161,31 +168,31 @@ namespace DeGame
 
         public List<Cel> GetAllCells()
         {
-            return cells;
+            return _cells;
         }
 
         /// <summary>
-        /// Resets the player
+        /// Resets the _player
         /// </summary>
         public void ResetPlayer()
         {
-            player = new Player();
-            foreach (Cel cel in cells)
+            _player = new Player();
+            foreach (Cel cel in _cells)
             {
                 if (cel.GetTypeCel() == Enums.Object.StartPoint)
                 {
-                    player.Move(cel.GetX(), cel.GetY());
+                    _player.Move(cel.GetX(), cel.GetY());
                     break;
                 }
             }
         }
 
         /// <summary>
-        /// Resets all bots.
+        /// Resets all _bots.
         /// </summary>
         public void ResetBots()
         {
-            bots.Clear();
+            _bots.Clear();
             GenerateBots();
         }
 
@@ -194,7 +201,7 @@ namespace DeGame
         /// </summary>
         public void ResetPowerUps()
         {
-            foreach (Cel cel in cells)
+            foreach (Cel cel in _cells)
             {
                 cel.ReSetPowerUp();
             }
@@ -215,7 +222,7 @@ namespace DeGame
             celY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(celY) / Convert.ToDecimal(CellSize))) * CellSize;
             if (typeCel == Enums.Object.StartPoint || typeCel == Enums.Object.Destination)
             {
-                foreach (Cel cel in cells)
+                foreach (Cel cel in _cells)
                 {
                     if (cel.GetTypeCel() == typeCel)
                     {
@@ -227,8 +234,8 @@ namespace DeGame
         }
 
         /// <summary>
-        /// Moves all the bots to the player if the player is in a cel next to the bot.
-        /// If player is not in a cel next to the bot, the bot moves randomly.
+        /// Moves all the _bots to the _player if the _player is in a cel next to the bot.
+        /// If _player is not in a cel next to the bot, the bot moves randomly.
         /// </summary>
         public void MoveBots()
         {
@@ -236,53 +243,54 @@ namespace DeGame
             int botX = 0;
             int botY = 0;
             bool botMove = true;
+
             for (int a = 0; a < AmountOfBots - 1; a++)
             {
                 botMove = true;
-                if (DetectPlayer(bots[a].LocationX, bots[a].LocationY - CellSize))
+                if (DetectPlayer(_bots[a].LocationX, _bots[a].LocationY - CellSize))
                 {
-                    botY = bots[a].LocationY - CellSize;
-                    botX = bots[a].LocationX;
+                    botY = _bots[a].LocationY - CellSize;
+                    botX = _bots[a].LocationX;
                 }
-                else if (DetectPlayer(bots[a].LocationX,bots[a].LocationY + CellSize))
+                else if (DetectPlayer(_bots[a].LocationX,_bots[a].LocationY + CellSize))
                 {
-                    botY = bots[a].LocationY + CellSize;
-                    botX = bots[a].LocationX;
+                    botY = _bots[a].LocationY + CellSize;
+                    botX = _bots[a].LocationX;
                 }
-                else if (DetectPlayer(bots[a].LocationX - CellSize, bots[a].LocationY))
+                else if (DetectPlayer(_bots[a].LocationX - CellSize, _bots[a].LocationY))
                 {
-                    botY = bots[a].LocationY;
-                    botX = bots[a].LocationX - CellSize;
+                    botY = _bots[a].LocationY;
+                    botX = _bots[a].LocationX - CellSize;
                 }
-                else if (DetectPlayer( bots[a].LocationX + CellSize,bots[a].LocationY))
+                else if (DetectPlayer( _bots[a].LocationX + CellSize,_bots[a].LocationY))
                 {
-                    botY = bots[a].LocationY;
-                    botX = bots[a].LocationX + CellSize;
+                    botY = _bots[a].LocationY;
+                    botX = _bots[a].LocationX + CellSize;
                 }
                 else
                 {
-                    direction = random.Next(1, 5);
+                    direction = _Random.Next(1, 5);
                     switch (direction)
                     {
                         case 1:
-                            botY = bots[a].LocationY - CellSize;
-                            botX = bots[a].LocationX;
+                            botY = _bots[a].LocationY - CellSize;
+                            botX = _bots[a].LocationX;
                             break;
                         case 2:
-                            botY = bots[a].LocationY;
-                            botX = bots[a].LocationX - CellSize;
+                            botY = _bots[a].LocationY;
+                            botX = _bots[a].LocationX - CellSize;
                             break;
                         case 3:
-                            botY = bots[a].LocationY + CellSize;
-                            botX = bots[a].LocationX;
+                            botY = _bots[a].LocationY + CellSize;
+                            botX = _bots[a].LocationX;
                             break;
                         case 4:
-                            botY = bots[a].LocationY;
-                            botX = bots[a].LocationX + CellSize;
+                            botY = _bots[a].LocationY;
+                            botX = _bots[a].LocationX + CellSize;
                             break;
                         default:
-                            botY = bots[a].LocationY - CellSize;
-                            botX = bots[a].LocationX;
+                            botY = _bots[a].LocationY - CellSize;
+                            botX = _bots[a].LocationX;
                             break;
                     }
                 }
@@ -299,40 +307,26 @@ namespace DeGame
                 }
                 if (botMove)
                 {
-                    bots[a].Move(cel);
+                    _bots[a].Move(cel);
                 }
             }
         }
 
         /// <summary>
-        /// Checks if a bot is in the same cell as a player.
+        /// Checks if a bot is in the same cell as a _player.
         /// </summary>
-        /// <returns>Returns the status of a player</returns>
+        /// <returns>Returns the status of a _player</returns>
         public Enums.PlayerStatus CheckBotOnPlayer()
         {
-            foreach (Bot bot in bots)
+            foreach (Bot bot in _bots.Where(bot => bot.LocationX == _player.LocationX && bot.LocationY == _player.LocationY && bot.IsKilled() == false))
             {
-                if (bot.LocationX == player.LocationX && bot.LocationY == player.LocationY && bot.IsKilled() == false)
-                {
-                    // check if player has star powerup
-                    if (player.powerUp == Enums.TypePowerUp.MarioStar)
-                    {
-                        bot.Kill();
-                        return PlayerStatus.Alive;
-                    }
-                    return player.RemoveHitpoints(bot.Strength);
-                }
+                // check if _player has star powerup
+                if (_player.powerUp != Enums.TypePowerUp.MarioStar) return _player.RemoveHitpoints(bot.Strength);
+                bot.Kill();
+                return PlayerStatus.Alive;
             }
 
-            foreach (Cel cel in cells)
-            {
-                if (cel.GetX() == player.LocationX && cel.GetY() == player.LocationY && cel.GetTypeCel() == Enums.Object.Destination)
-                {
-                    return PlayerStatus.Win;
-                }
-            }
-
-            return PlayerStatus.Alive;
+            return _cells.Any(cel => cel.GetX() == _player.LocationX && cel.GetY() == _player.LocationY && cel.GetTypeCel() == Enums.Object.Destination) ? PlayerStatus.Win : PlayerStatus.Alive;
         }
 
         /// <summary>
@@ -343,45 +337,34 @@ namespace DeGame
         /// <returns>Cel found or null</returns>
         public Cel GetSingleCell(int x, int y)
         {
-            foreach (Cel cel in cells)
-            {
-                if (cel.GetX() == x && cel.GetY() == y)
-                {
-                    return cel;
-                }
-            }
-
-            return null;
+            return _cells.FirstOrDefault(cel => cel.GetX() == x && cel.GetY() == y);
         }
 
         /// <summary>
-        /// Moves player
+        /// Moves _player
         /// </summary>
-        /// <param name="directionKeys">Direction the player want to go.</param>
+        /// <param name="directionKeys">Direction the _player want to go.</param>
         public void MovePlayer(bool[] directionKeys)
         {
             bool playerMove = true;
-            int newX = player.LocationX;
-            int newY = player.LocationY;
+            int newX = _player.LocationX;
+            int newY = _player.LocationY;
 
-            if (directionKeys[0]) { newY -= CellSize; player.Direction = Direction.Up; }
+            if (directionKeys[0]) { newY -= CellSize; _player.Direction = Direction.Up; }
 
-            if (directionKeys[1]) { newX -= CellSize; player.Direction = Direction.Left; }
+            if (directionKeys[1]) { newX -= CellSize; _player.Direction = Direction.Left; }
 
-            if (directionKeys[2]) { newY += CellSize; player.Direction = Direction.Down; }
+            if (directionKeys[2]) { newY += CellSize; _player.Direction = Direction.Down; }
 
-            if (directionKeys[3]) { newX += CellSize; player.Direction = Direction.Right; }
+            if (directionKeys[3]) { newX += CellSize; _player.Direction = Direction.Right; }
 
-            foreach (Cel cel in cells)
+            foreach (Cel cel in _cells.Where(cel => cel.GetX() == newX && cel.GetY() == newY))
             {
-                if (cel.GetX() == newX && cel.GetY() == newY)
+                if (cel.GetTypeCel() == Enums.Object.Wall)
                 {
-                    if (cel.GetTypeCel() == Enums.Object.Wall)
-                    {
-                        playerMove = false;
-                    }
-                    break;
+                    playerMove = false;
                 }
+                break;
             }
 
             if (newX > CellSize * (MapSize - 1) || newX < 0 || newY > CellSize * (MapSize - 1) || newY < 0)
@@ -389,24 +372,22 @@ namespace DeGame
                 playerMove = false;
             }
 
-            if (playerMove)
+            if (!playerMove) return;
+
+            _player.Move(newX, newY);
+
+            if (_player.powerUp == Enums.TypePowerUp.None)
             {
-                player.Move(newX, newY);
-                if (player.powerUp == Enums.TypePowerUp.None)
-                {
-                    player.powerUp = CheckPlayerOnPowerUp(newX, newY);
-                }
-                
+                _player.powerUp = CheckPlayerOnPowerUp(newX, newY);
             }
-            
         }
 
         /// <summary>
-        /// Checks if player is in the same position as a powerup.
+        /// Checks if _player is in the same position as a powerup.
         /// </summary>
-        /// <param name="x">X position of player.</param>
-        /// <param name="y">Y posiiton of player.</param>
-        /// <returns>What type of powerup the player stays on.</returns>
+        /// <param name="x">X position of _player.</param>
+        /// <param name="y">Y posiiton of _player.</param>
+        /// <returns>What type of powerup the _player stays on.</returns>
         private Enums.TypePowerUp CheckPlayerOnPowerUp(int x, int y)
         {
             Cel cel = GetSingleCell(x, y);
@@ -424,24 +405,24 @@ namespace DeGame
         }
 
         /// <summary>
-        /// Gets player.
+        /// Gets _player.
         /// </summary>
-        /// <returns>The player.</returns>
+        /// <returns>The _player.</returns>
         public Player GetPlayer()
         {
-            return player;
+            return _player;
         }
 
         /// <summary>
-        /// Calculates if the screen needs to be adjusted in order for the player to remain visible on screen.
+        /// Calculates if the screen needs to be adjusted in order for the _player to remain visible on screen.
         /// </summary>
         /// <param name="windowX">Width of window</param>
         /// <param name="windowY">Heigth of window</param>
         public void CalculateOverhead(int windowX, int windowY)
         {
-            if (player.LocationX > 500)
+            if (_player.LocationX > 500)
             {
-                OverheadX = player.LocationX - 500;
+                OverheadX = _player.LocationX - 500;
 
                 if (OverheadX + windowX > CellSize * MapSize)
                 {
@@ -452,9 +433,9 @@ namespace DeGame
                 OverheadX = 0;
             }
 
-            if (player.LocationY > 500)
+            if (_player.LocationY > 500)
             {
-                OverheadY = player.LocationY - 500;
+                OverheadY = _player.LocationY - 500;
                 if (OverheadY + windowY > CellSize * MapSize)
                 {
                     OverheadY = (CellSize * MapSize) - windowY;
@@ -464,7 +445,7 @@ namespace DeGame
         }
 
         /// <summary>
-        /// Gets the cells that need to be shown on the screen.
+        /// Gets the _cells that need to be shown on the screen.
         /// </summary>
         /// <param name="windowX">Width of window</param>
         /// <param name="windowY">Heigth of window</param>
@@ -475,7 +456,7 @@ namespace DeGame
 
             CalculateOverhead(windowX, windowY);
 
-            foreach (Cel cel in cells)
+            foreach (Cel cel in _cells)
             {
                 if(cel.GetX() >= OverheadX && cel.GetX() <= windowX + CellSize + OverheadX && 
                     cel.GetY() >= OverheadY && cel.GetY() <= windowY + CellSize + OverheadY)
@@ -488,18 +469,18 @@ namespace DeGame
         }
 
         /// <summary>
-        /// Gets bots inside window
+        /// Gets _bots inside window
         /// </summary>
         /// <param name="windowX"></param>
         /// <param name="windowY"></param>
-        /// <returns>List with bots in window.</returns>
+        /// <returns>List with _bots in window.</returns>
         public List<Bot> GetBots(int windowX, int windowY)
         {
             List<Bot> windowsBots = new List<Bot>();
 
             CalculateOverhead(windowX, windowY);
 
-            foreach (Bot bot in bots)
+            foreach (Bot bot in _bots)
             {
                 if (bot.LocationX >= OverheadX && bot.LocationX <= windowX + CellSize + OverheadX && 
                     bot.LocationY >= OverheadY && bot.LocationY <= windowY + CellSize + OverheadY && 
@@ -513,14 +494,14 @@ namespace DeGame
         }
 
         /// <summary>
-        /// Checks where the bots are.
+        /// Checks where the _bots are.
         /// </summary>
         /// <param name="x">X coördinate</param>
         /// <param name="y">Y coördinate</param>
         /// <returns>If a bot was found on this position</returns>
         public bool DetectBot(int x, int y)
         {
-            foreach (Bot bot in bots)
+            foreach (Bot bot in _bots)
             {
                 if (bot.LocationX == x && bot.LocationY == y)
                 {
@@ -532,15 +513,15 @@ namespace DeGame
         }
 
         /// <summary>
-        /// Checks where the player is.
+        /// Checks where the _player is.
         /// </summary>
         /// <param name="x">X coördinate</param>
         /// <param name="y">Y coördinate</param>
-        /// <returns>If the player was found on this position</returns>
+        /// <returns>If the _player was found on this position</returns>
         public bool DetectPlayer(int x, int y)
         {
             
-            if (player.LocationX == x && player.LocationY == y)
+            if (_player.LocationX == x && _player.LocationY == y)
             {
                 return true;
             }
@@ -561,27 +542,27 @@ namespace DeGame
                 switch (i)
                 {
                     default:
-                        if (random.Next(0, 7) == 5)
+                        if (_Random.Next(0, 7) == 5)
                         {
-                            cells.Add(new Cel(Enums.Object.Wall, x * CellSize, y * CellSize));
+                            _cells.Add(new Cel(Enums.Object.Wall, x * CellSize, y * CellSize));
                         }
                         else
                         {
-                            cells.Add(new Cel(Enums.Object.Grass, x * CellSize, y * CellSize));
+                            _cells.Add(new Cel(Enums.Object.Grass, x * CellSize, y * CellSize));
                         }
                         break;
                 }
             }
 
-            cells[random.Next(1, MapSize * MapSize)].SetObject(Enums.Object.Destination);
-            cells[random.Next(1, MapSize * MapSize)].SetObject(Enums.Object.StartPoint);
+            _cells[_Random.Next(1, MapSize * MapSize)].SetObject(Enums.Object.Destination);
+            _cells[_Random.Next(1, MapSize * MapSize)].SetObject(Enums.Object.StartPoint);
 
             GenerateBots();
             GeneratePowerUps();
         }
 
         /// <summary>
-        /// Generates bots randomly.
+        /// Generates _bots randomly.
         /// </summary>
         private void GenerateBots()
         {
@@ -593,16 +574,16 @@ namespace DeGame
             {
                 do
                 {
-                    botX = random.Next(CellSize * MapSize);
-                    botY = random.Next(CellSize * MapSize);
+                    botX = _Random.Next(CellSize * MapSize);
+                    botY = _Random.Next(CellSize * MapSize);
 
                     botX = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botX) / Convert.ToDecimal(CellSize))) * CellSize;
                     botY = Convert.ToInt32(Math.Floor(Convert.ToDecimal(botY) / Convert.ToDecimal(CellSize))) * CellSize;
                     cel = GetSingleCell(botX, botY);
                 } while (cel.GetTypeCel() != Enums.Object.Grass || DetectBot(botX, botY));
 
-                bots.Add(new Bot());
-                bots[a].Move(cel);
+                _bots.Add(new Bot());
+                _bots[a].Move(cel);
             }
         }
 
@@ -611,7 +592,7 @@ namespace DeGame
         /// </summary>
         private void GeneratePowerUps()
         {
-            int amountOfPowerUps = random.Next(6);
+            int amountOfPowerUps = _Random.Next(6);
             int powerUpCellIndex;
 
             Enums.TypePowerUp typePowerUp = Enums.TypePowerUp.MarioStar;
@@ -620,11 +601,11 @@ namespace DeGame
             {
                 do
                 {
-                    powerUpCellIndex = random.Next(MapSize * MapSize);
+                    powerUpCellIndex = _Random.Next(MapSize * MapSize);
                 }
-                while (cells[powerUpCellIndex].GetTypeCel() != Enums.Object.Grass || cells[powerUpCellIndex].GetPowerUp() != null);
+                while (_cells[powerUpCellIndex].GetTypeCel() != Enums.Object.Grass || _cells[powerUpCellIndex].GetPowerUp() != null);
 
-                cells[powerUpCellIndex].SetPowerUp(new PowerUp(typePowerUp));
+                _cells[powerUpCellIndex].SetPowerUp(new PowerUp(typePowerUp));
             }
         }
     }

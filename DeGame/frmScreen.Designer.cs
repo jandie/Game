@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.tmrMoveBots = new System.Windows.Forms.Timer(this.components);
             this.tmrMovePlayer = new System.Windows.Forms.Timer(this.components);
+            this.pnlScreen = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // tmrMoveBots
@@ -43,11 +44,19 @@
             this.tmrMovePlayer.Interval = 50;
             this.tmrMovePlayer.Tick += new System.EventHandler(this.tmrMovePlayer_Tick);
             // 
+            // pnlScreen
+            // 
+            this.pnlScreen.Location = new System.Drawing.Point(0, 0);
+            this.pnlScreen.Name = "pnlScreen";
+            this.pnlScreen.Size = new System.Drawing.Size(1400, 900);
+            this.pnlScreen.TabIndex = 0;
+            // 
             // frmScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1384, 861);
+            this.Controls.Add(this.pnlScreen);
             this.Name = "frmScreen";
             this.Text = "The Game";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmScreen_FormClosing);
@@ -65,6 +74,7 @@
 
         private System.Windows.Forms.Timer tmrMoveBots;
         private System.Windows.Forms.Timer tmrMovePlayer;
+        private System.Windows.Forms.Panel pnlScreen;
     }
 }
 

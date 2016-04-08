@@ -78,11 +78,8 @@ namespace DeGame
             List<Cel> cellsToDraw = GetCells(windowX, windowY);
             List<Bot> botsToDraw = GetBots(windowX, windowY);
 
-            //Bitmap screen = new Bitmap(windowX, windowY);
-            //Graphics screenGraphics = Graphics.FromImage(screen);
-
-            //screenGraphics.FillRectangle(Brushes.Red, 0, red, 200, 10);
-            //screenGraphics.FillRectangle(Brushes.White, 0, white, 200, 10);
+            Bitmap screen = new Bitmap(windowX, windowY);
+            Graphics screenGraphics = Graphics.FromImage(screen);
 
 
             foreach (Cel cel in cellsToDraw)
@@ -106,8 +103,10 @@ namespace DeGame
                 }
 
                 var plaats = new Point(cel.GetX() - OverheadX, cel.GetY() - OverheadY);
-                gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
+                screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
 
+                
+                
                 //Draw _player
                 if (cel.GetX() == _player.LocationX && cel.GetY() == _player.LocationY)
                 {
@@ -129,7 +128,7 @@ namespace DeGame
                     
                     plaats = new Point(_player.LocationX - OverheadX, _player.LocationY - OverheadY);
 
-                    gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
+                    screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
                 }
 
                 //Draw _bots
@@ -140,7 +139,7 @@ namespace DeGame
                         image = DeGame.Properties.Resources.bot;
                         plaats = new Point(bot.LocationX - OverheadX, bot.LocationY - OverheadY);
 
-                        gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
+                        screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
                     }
                 }
 
@@ -150,11 +149,12 @@ namespace DeGame
                     {
                         case Enums.TypePowerUp.MarioStar:
                             image = DeGame.Properties.Resources.MarioStar;
-                            gr.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
+                            screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
                             break;
                     }
                 }
             }
+            gr.DrawImage(screen, 0, 0, windowX, windowY);
         }
 
         public void SetCells(List<Cel> cells)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace DeGame.Classes
@@ -147,7 +148,6 @@ namespace DeGame.Classes
         public void Draw()
         {
             _maps[_currentMap].DrawCellsAndEntities(_gr, _windowX, _windowY);
-            CheckPlayerAndBots();
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace DeGame.Classes
 
                 for (int i = 0; i < 10; i++)
                 {
-                    Map map = new Map(100, 100, 100, false);
+                    Map map = new Map(100, 50, 100, false);
 
                     _maps.Add(map);
                 }
@@ -215,6 +215,7 @@ namespace DeGame.Classes
         public void MoveAllBots()
         {
             _maps[_currentMap].MoveBots();
+            CheckPlayerAndBots();
         }
 
         /// <summary>
@@ -224,8 +225,12 @@ namespace DeGame.Classes
         {
             _maps[_currentMap].MovePlayer(_directionKeys);
 
+            if (_directionKeys.Any(d => d))
+            {
+                CheckPlayerAndBots();
+            }
+
             Draw();
-            CheckPlayerAndBots();
         }
 
         public void MoveAllBullets()

@@ -5,22 +5,21 @@ namespace DeGame.Classes
     public class Player : Entity
     {
         
-        private int _hitpoints;
-
+        public int Hitpoints { get; private set; }
         public Enums.TypePowerUp PowerUp { get; set; }
         
 
         public Player()
         {
-            _hitpoints = 100;
+            Hitpoints = 1000;
             PowerUp = Enums.TypePowerUp.None;
         }
 
         public Enums.PlayerStatus RemoveHitpoints(int amount)
         {
-            _hitpoints -= amount;
+            Hitpoints -= amount;
 
-            if (_hitpoints < 1)
+            if (Hitpoints < 1)
             {
                 return PlayerStatus.Dead;
             }

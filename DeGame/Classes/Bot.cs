@@ -7,11 +7,12 @@ namespace DeGame.Classes
         private int _health;
 
         public int Strength { get; }
+        public int Hitpoints => _health;
 
         public Bot()
         {
             _killed = false;
-            _health = 100;
+            _health = 200;
             Strength = 100;
         }
 

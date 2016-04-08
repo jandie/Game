@@ -83,7 +83,9 @@ namespace DeGame.Classes
             List<Bot> botsToDraw = GetBots(windowX, windowY);
             Image image;
             Point plaats;
-            Brush brush = new SolidBrush(Color.Aqua);
+            Brush brush = new SolidBrush(Color.Gold);
+            Brush brushBot = new SolidBrush(Color.Black);
+            Font font = new Font(FontFamily.GenericMonospace, 20, FontStyle.Bold);
 
             Bitmap screen = new Bitmap(windowX, windowY);
             Graphics screenGraphics = Graphics.FromImage(screen);
@@ -132,6 +134,7 @@ namespace DeGame.Classes
                     plaats = new Point(_player.LocationX - OverheadX, _player.LocationY - OverheadY);
 
                     screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
+                    screenGraphics.DrawString(_player.Hitpoints.ToString(), font, brush, plaats.X, plaats.Y);
                 }
 
                 //Draw _bots
@@ -154,13 +157,12 @@ namespace DeGame.Classes
                 plaats = new Point(bot.LocationX - OverheadX, bot.LocationY - OverheadY);
 
                 screenGraphics.DrawImage(image, plaats.X, plaats.Y, CellSize, CellSize);
+                screenGraphics.DrawString(bot.Hitpoints.ToString(), font, brushBot, plaats.X, plaats.Y);
             }
 
             foreach (Bullet bullet in _bullets.Where(b => b.LocationX >= OverheadX && b.LocationY >= OverheadY && b.LocationX <= OverheadX + windowX && b.LocationY <= windowY + OverheadY && !b.Destroyed))
             {
-                
-
-                screenGraphics.FillEllipse(brush, bullet.LocationX - OverheadX + (CellSize / 2), bullet.LocationY - OverheadY + (CellSize / 2), 10, 10 );
+                screenGraphics.FillEllipse(brush, bullet.LocationX - OverheadX + (CellSize / 2), bullet.LocationY - OverheadY + (CellSize / 2), CellSize / 4, CellSize / 4);
             }
 
             gr.DrawImage(screen, 0, 0, windowX, windowY);

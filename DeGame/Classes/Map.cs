@@ -672,7 +672,7 @@ namespace DeGame.Classes
 
                 foreach (Bot bot in _bots.Where(bot =>bot.LocationX == bullet.LocationX && bot.LocationY == bullet.LocationY  && bot.IsKilled() == false))
                 {
-                    Score += bot.Damage(bullet.ImpactStrenth);
+                    Score += bot.Damage(bullet.ImpactStrength);
                     bullet.Destroy();
                 }
 

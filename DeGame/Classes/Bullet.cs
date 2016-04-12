@@ -4,17 +4,17 @@ namespace DeGame.Classes
 {
     class Bullet : Entity
     {
-        public int ImpactStrenth { get; private set; }
+        public int ImpactStrength { get; private set; }
         public bool Destroyed { get; set; }
 
         public Bullet()
         {
-            ImpactStrenth = 100;
+            ImpactStrength = 100;
         }
 
         public Bullet(Direction direction, int locationX, int locationY, int cellSize)
         {
-            ImpactStrenth = 100;
+            ImpactStrength = 100;
             Direction = direction;
 
             LocationX = locationX;
@@ -42,7 +42,5 @@ namespace DeGame.Classes
         {
             Destroyed = true;
         }
-
-        
     }
 }

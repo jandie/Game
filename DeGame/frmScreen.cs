@@ -32,7 +32,7 @@ namespace DeGame
             
             tmrMoveBots.Interval = 800;
             tmrMoveBots.Start();
-            tmrMovePlayer.Interval = 100;
+            tmrMovePlayer.Interval = 1;
             tmrMovePlayer.Start();
 
             this.Size = new Size(windowX, windowY);
@@ -44,20 +44,9 @@ namespace DeGame
             this.Text = Resources.frmScreen_RefreshStats_The_Game___Level__ + _world.CurrentLevel;
         }
 
-        private void frmScreen_Paint(object sender, PaintEventArgs e)
-        {
-            
-        }
-
         private void pnlScreen_Paint(object sender, PaintEventArgs e)
         {
             _world.Draw();
-        }
-
-        private void frmScreen_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            //world.KeyDown(e.KeyChar, _mouseX, mouseY);
-            //RefreshStats();
         }
 
         private void tmrMoveBots_Tick(object sender, EventArgs e)

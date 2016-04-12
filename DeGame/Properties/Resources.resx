@@ -121,17 +121,8 @@
   <data name="bot" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Textures\bot.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="destination" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\Debug\Textures\destination.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="MarioStar" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Textures\MarioStarTransparent.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="player_right" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\Debug\Textures\player.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="startpoint" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\Debug\Textures\startpoint.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="grass" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Textures\grass.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -153,5 +144,14 @@
   </data>
   <data name="frmScreen_RefreshStats____Score__" xml:space="preserve">
     <value> - Score: </value>
+  </data>
+  <data name="destination" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Textures\destination.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="player_right" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Textures\player_right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="startpoint" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Textures\startpoint.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
